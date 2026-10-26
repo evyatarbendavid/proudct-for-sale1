@@ -201,10 +201,13 @@ const row: CSSProperties = {
   direction: "rtl",
 };
 
+// כל האפקטים מונמכים יחד, כדי שגם כשהם חופפים השיא יישאר מתחת ל-0 dB
+const MASTER = 0.6;
+
 function Sfx({ at, name, volume = 1 }: { at: number; name: string; volume?: number }) {
   return (
     <Sequence from={f(at)} layout="none">
-      <Audio src={staticFile(`sfx/${name}.wav`)} volume={volume} />
+      <Audio src={staticFile(`sfx/${name}.wav`)} volume={volume * MASTER} />
     </Sequence>
   );
 }

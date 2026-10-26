@@ -120,7 +120,9 @@ export function createWatchScene(
       spin += velocity;
       velocity *= 0.92;
     }
-    watch.rotation.y = reduceMotion ? -0.5 + spin + 0.9 : spin - (1 - ease) * 1.6;
+    // השעון מסתובב גם עם הגלילה
+    const scrollSpin = reduceMotion ? 0 : window.scrollY * 0.0022;
+    watch.rotation.y = reduceMotion ? -0.5 + spin + 0.9 : spin - (1 - ease) * 1.6 + scrollSpin;
     watch.rotation.x = 0.06;
     watch.position.y = reduceMotion ? 0 : Math.sin(elapsed * 1.1) * 0.05;
     const scale = 0.86 + 0.14 * ease;

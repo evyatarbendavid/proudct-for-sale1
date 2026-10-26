@@ -21,12 +21,32 @@ const option =
 const on = "border-ink bg-paper";
 const off = "border-line bg-paper/60 hover:border-graphite";
 
-function Step({ n, title, children }: { n: number; title: string; children: React.ReactNode }) {
+function Step({
+  n,
+  id,
+  title,
+  value,
+  missing = false,
+  children,
+}: {
+  n: number;
+  id?: string;
+  title: string;
+  value: string;
+  missing?: boolean;
+  children: React.ReactNode;
+}) {
   return (
-    <fieldset className="border-t border-line pt-6">
+    <fieldset id={id} className="scroll-mt-6 border-t border-line pt-6">
       <legend className="float-start mb-4 flex w-full items-baseline gap-3">
         <span className="font-mono text-sm text-graphite">{n}/5</span>
         <span className="text-lg font-semibold">{title}</span>
+        <span
+          className={`ms-auto truncate text-sm ${missing ? "font-semibold text-[#e2470f]" : "text-graphite"}`}
+          aria-live="polite"
+        >
+          {value}
+        </span>
       </legend>
       <div className="clear-both">{children}</div>
     </fieldset>
@@ -60,6 +80,105 @@ export function OrderForm({ order }: { order: OrderState }) {
     : "";
   const paymentHref = isLive ? (paymentLinks[qty] ?? "") : "";
 
+  const summary = (
+    <div className="mt-4 rounded-md border border-line bg-steel/60 p-5">
+      <dl className="space-y-1.5 text-sm">
+        <div className="flex justify-between gap-4">
+          <dt className="text-graphite">{bandTypes[type].name}</dt>
+          <dd className="font-mono">{size || "מידה?"}</dd>
+        </div>
+        <div className="flex justify-between gap-4">
+          <dt className="text-graphite">צבעים</dt>
+          <dd className="flex gap-1">
+            {chosen.map((c, i) => (
+              <span
+                key={i}
+                title={c.name}
+                className="size-4 rounded-full border border-black/10"
+                style={{ background: c.hex }}
+              />
+            ))}
+          </dd>
+        </div>
+        <div className="flex justify-between gap-4">
+          <dt className="text-graphite">משלוח</dt>
+          <dd>חינם</dd>
+        </div>
+        <div className="flex items-end justify-between gap-4 border-t border-line pt-3">
+          <dt className="font-semibold">{isLive ? "סה״כ לתשלום" : "מחיר השקה"}</dt>
+          <dd className="font-display text-5xl leading-none font-bold">₪{bundle.price}</dd>
+        </div>
+      </dl>
+
+      {isLive && (
+        <label className="mt-5 flex items-start gap-2 text-sm">
+          <input
+            type="checkbox"
+            checked={agreed}
+            onChange={(e) => order.setAgreed(e.target.checked)}
+            className="mt-1 size-4 accent-[var(--ink)]"
+          />
+          <span>
+            קראתי ואני מסכים/ה ל
+            <Link href="/terms" className="underline">
+              תקנון
+            </Link>{" "}
+            ול
+            <Link href="/cancel" className="underline">
+              תנאי ביטול העסקה
+            </Link>
+          </span>
+        </label>
+      )}
+
+      {!ready && (
+        <p className="mt-4 text-sm text-graphite" aria-live="polite">
+          {size === "" ? "נשאר לבחור מידה." : "נשאר לאשר את התקנון."}
+        </p>
+      )}
+
+      <div className="mt-4 grid gap-3">
+        {whatsappHref ? (
+          <a
+            href={ready ? whatsappHref : undefined}
+            aria-disabled={!ready}
+            target="_blank"
+            rel="noopener noreferrer"
+            className={`flex min-h-13 items-center justify-center rounded-full px-6 text-lg font-semibold transition ${
+              ready
+                ? "bg-signal text-ink hover:-translate-y-0.5 hover:shadow-[0_8px_24px_-8px_var(--signal)]"
+                : "pointer-events-none bg-line text-graphite"
+            }`}
+          >
+            {isLive ? "להזמנה בוואטסאפ" : "תעדכנו אותי בהשקה"}
+          </a>
+        ) : (
+          <span className="flex min-h-13 items-center justify-center rounded-full bg-line px-6 font-semibold text-graphite">
+            וואטסאפ יחובר בקרוב
+          </span>
+        )}
+        {paymentHref && (
+          <a
+            href={ready ? paymentHref : undefined}
+            aria-disabled={!ready}
+            target="_blank"
+            rel="noopener noreferrer"
+            className={`flex min-h-13 items-center justify-center rounded-full border-2 px-6 font-semibold transition ${
+              ready ? "border-ink hover:bg-ink hover:text-paper" : "pointer-events-none border-line text-graphite"
+            }`}
+          >
+            תשלום מאובטח באשראי
+          </a>
+        )}
+      </div>
+      <p className="mt-3 text-xs text-graphite">
+        {isLive
+          ? "אחרי שליחת ההזמנה בוואטסאפ נאשר את הפרטים ונשלח קישור לתשלום מאובטח באשראי. ההזמנה יוצאת לדרך רק אחרי התשלום."
+          : "זו לא הזמנה ואין תשלום. נשלח לך הודעה כשהרצועות זמינות, ותחליט/י אז אם להזמין."}
+      </p>
+    </div>
+  );
+
   return (
     <section id="order" aria-labelledby="order-title" className="scroll-mt-4 bg-paper">
       <div className="mx-auto max-w-6xl px-4 py-14 md:py-20">
@@ -69,7 +188,7 @@ export function OrderForm({ order }: { order: OrderState }) {
 
         <div className="mt-8 grid gap-10 md:grid-cols-[1fr_minmax(280px,420px)]">
           <div className="space-y-8">
-            <Step n={1} title="סוג">
+            <Step n={1} title="סוג" value={bandTypes[type].short}>
               <div className="grid gap-3 sm:grid-cols-2">
                 {(Object.keys(bandTypes) as BandType[]).map((t) => (
                   <label key={t} className={`${option} p-4 ${type === t ? on : off}`}>
@@ -87,7 +206,7 @@ export function OrderForm({ order }: { order: OrderState }) {
               </div>
             </Step>
 
-            <Step n={2} title="מידת השעון">
+            <Step n={2} id="step-size" title="מידת השעון" value={size || "עוד לא נבחרה"} missing={!size}>
               <p className="-mt-2 mb-3 text-sm text-graphite">
                 המידה כתובה על גב השעון.{" "}
                 <a href="#faq-size" className="inline-block py-2 underline underline-offset-4">
@@ -115,7 +234,7 @@ export function OrderForm({ order }: { order: OrderState }) {
               </div>
             </Step>
 
-            <Step n={3} title="כמה רצועות">
+            <Step n={3} title="כמה רצועות" value={bundle.label}>
               <div className="grid grid-cols-3 gap-2 sm:gap-3">
                 {bundles.map((b) => (
                   <label
@@ -148,7 +267,7 @@ export function OrderForm({ order }: { order: OrderState }) {
               </div>
             </Step>
 
-            <Step n={4} title="צבע">
+            <Step n={4} title="צבע" value={chosen.map((c) => c.name).join(", ")}>
               {qty > 1 && (
                 <div className="mb-4 flex flex-wrap gap-2" role="tablist" aria-label="בחירת רצועה">
                   {Array.from({ length: qty }, (_, i) => (
@@ -193,7 +312,7 @@ export function OrderForm({ order }: { order: OrderState }) {
               </div>
             </Step>
 
-            <Step n={5} title="איך לקבל">
+            <Step n={5} title="איך לקבל" value={method === "home" ? "משלוח עד הבית" : "מסירה אישית"}>
               <div className="grid gap-3 sm:grid-cols-2">
                 <label className={`${option} p-4 ${method === "home" ? on : off}`}>
                   <input
@@ -233,104 +352,14 @@ export function OrderForm({ order }: { order: OrderState }) {
                 <Watch3D color={previewColor.hex} type={type} className="absolute inset-0" />
               </div>
 
-              <div className="mt-4 rounded-md border border-line bg-steel/60 p-5">
-                <dl className="space-y-1.5 text-sm">
-                  <div className="flex justify-between gap-4">
-                    <dt className="text-graphite">{bandTypes[type].name}</dt>
-                    <dd className="font-mono">{size || "מידה?"}</dd>
-                  </div>
-                  <div className="flex justify-between gap-4">
-                    <dt className="text-graphite">צבעים</dt>
-                    <dd className="flex gap-1">
-                      {chosen.map((c, i) => (
-                        <span
-                          key={i}
-                          title={c.name}
-                          className="size-4 rounded-full border border-black/10"
-                          style={{ background: c.hex }}
-                        />
-                      ))}
-                    </dd>
-                  </div>
-                  <div className="flex justify-between gap-4">
-                    <dt className="text-graphite">משלוח</dt>
-                    <dd>חינם</dd>
-                  </div>
-                  <div className="flex items-end justify-between gap-4 border-t border-line pt-3">
-                    <dt className="font-semibold">{isLive ? "סה״כ לתשלום" : "מחיר השקה"}</dt>
-                    <dd className="font-display text-5xl leading-none font-bold">₪{bundle.price}</dd>
-                  </div>
-                </dl>
-
-                {isLive && (
-                  <label className="mt-5 flex items-start gap-2 text-sm">
-                    <input
-                      type="checkbox"
-                      checked={agreed}
-                      onChange={(e) => order.setAgreed(e.target.checked)}
-                      className="mt-1 size-4 accent-[var(--ink)]"
-                    />
-                    <span>
-                      קראתי ואני מסכים/ה ל
-                      <Link href="/terms" className="underline">
-                        תקנון
-                      </Link>{" "}
-                      ול
-                      <Link href="/cancel" className="underline">
-                        תנאי ביטול העסקה
-                      </Link>
-                    </span>
-                  </label>
-                )}
-
-                {!ready && (
-                  <p className="mt-4 text-sm text-graphite" aria-live="polite">
-                    {size === "" ? "נשאר לבחור מידה." : "נשאר לאשר את התקנון."}
-                  </p>
-                )}
-
-                <div className="mt-4 grid gap-3">
-                  {whatsappHref ? (
-                    <a
-                      href={ready ? whatsappHref : undefined}
-                      aria-disabled={!ready}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      className={`flex min-h-13 items-center justify-center rounded-full px-6 text-lg font-semibold transition ${
-                        ready
-                          ? "bg-signal text-ink hover:-translate-y-0.5 hover:shadow-[0_8px_24px_-8px_var(--signal)]"
-                          : "pointer-events-none bg-line text-graphite"
-                      }`}
-                    >
-                      {isLive ? "להזמנה בוואטסאפ" : "תעדכנו אותי בהשקה"}
-                    </a>
-                  ) : (
-                    <span className="flex min-h-13 items-center justify-center rounded-full bg-line px-6 font-semibold text-graphite">
-                      וואטסאפ יחובר בקרוב
-                    </span>
-                  )}
-                  {paymentHref && (
-                    <a
-                      href={ready ? paymentHref : undefined}
-                      aria-disabled={!ready}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      className={`flex min-h-13 items-center justify-center rounded-full border-2 px-6 font-semibold transition ${
-                        ready ? "border-ink hover:bg-ink hover:text-paper" : "pointer-events-none border-line text-graphite"
-                      }`}
-                    >
-                      תשלום מאובטח באשראי
-                    </a>
-                  )}
-                </div>
-                <p className="mt-3 text-xs text-graphite">
-                  {isLive
-                    ? "אחרי שליחת ההזמנה בוואטסאפ נאשר את הפרטים ונשלח קישור לתשלום מאובטח באשראי. ההזמנה יוצאת לדרך רק אחרי התשלום."
-                    : "זו לא הזמנה ואין תשלום. נשלח לך הודעה כשהרצועות זמינות, ותחליט/י אז אם להזמין."}
-                </p>
-              </div>
+              <div className="hidden md:block">{summary}</div>
             </div>
           </aside>
+
+          {/* במובייל הסיכום והכפתור באים אחרי הבחירות */}
+          <div id="summary" className="scroll-mt-4 md:hidden">
+            {summary}
+          </div>
         </div>
       </div>
     </section>

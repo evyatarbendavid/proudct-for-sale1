@@ -63,6 +63,38 @@ h3 {
   }
 }
 
+/* גל צבע סביב הבזל בהחלפת צבע */
+@keyframes pulse-ring {
+  from {
+    transform: scale(0.94);
+    opacity: 0.55;
+  }
+  to {
+    transform: scale(1.12);
+    opacity: 0;
+  }
+}
+.pulse-ring {
+  animation: pulse-ring 0.8s cubic-bezier(0.2, 0.8, 0.2, 1) both;
+}
+
+/* פתיחה חלקה של שאלות נפוצות, בדפדפנים שתומכים */
+@supports (interpolate-size: allow-keywords) {
+  :root {
+    interpolate-size: allow-keywords;
+  }
+  details::details-content {
+    height: 0;
+    overflow: clip;
+    transition:
+      height 0.3s ease,
+      content-visibility 0.3s allow-discrete;
+  }
+  details[open]::details-content {
+    height: auto;
+  }
+}
+
 @media (prefers-reduced-motion: reduce) {
   *,
   *::before,

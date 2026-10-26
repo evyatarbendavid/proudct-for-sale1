@@ -1,6 +1,6 @@
 "use client";
 
-import type { ReactNode } from "react";
+import { useEffect, useState, type ReactNode } from "react";
 import { bandTypes, bundles, colors, delivery, type BandType } from "@/lib/config";
 import { Bezel } from "./Bezel";
 import { OrderForm } from "./OrderForm";
@@ -14,10 +14,11 @@ const pair = bundles.find((b) => b.qty === 2);
 export function Storefront({ children }: { children?: ReactNode }) {
   const order = useOrderState();
   const heroColor = colorById(order.bandColors[0]);
+  const showBar = useMobileBar();
 
   return (
     <>
-      <section className="mx-auto w-full max-w-6xl px-4 pt-6 pb-10 sm:pt-10 md:pb-16">
+      <section id="hero" className="mx-auto w-full max-w-6xl px-4 pt-6 pb-10 sm:pt-10 md:pb-16">
         <div className="grid gap-x-10 [grid-template-areas:'head'_'stage'_'controls'] md:grid-cols-[1.05fr_1fr] md:[grid-template-areas:'head_stage'_'controls_stage']">
           <div className="[grid-area:head] md:self-end">
             {/* avoid-ai-design-ignore: SD5 — השורה הכתומה היא צבע המותג, וחוזרת גם בסרטון */}
@@ -37,6 +38,13 @@ export function Storefront({ children }: { children?: ReactNode }) {
 
           <div className="relative mx-auto aspect-square w-full max-w-[560px] [grid-area:stage] md:self-center">
             <Bezel className="absolute inset-[6%] h-[88%] w-[88%]" />
+            {/* גל בצבע שנבחר, בכל החלפת צבע */}
+            <span
+              key={heroColor.id}
+              aria-hidden
+              className="pulse-ring pointer-events-none absolute inset-[6%] rounded-full border-[6px]"
+              style={{ borderColor: heroColor.hex }}
+            />
             <Watch3D
               color={heroColor.hex}
               type={order.type}
@@ -100,7 +108,7 @@ export function Storefront({ children }: { children?: ReactNode }) {
 
             <div className="mt-6 flex flex-wrap items-center gap-x-6 gap-y-4">
               <a
-                href="#order"
+                href="#step-size"
                 className="inline-flex min-h-13 items-center rounded-full bg-signal px-7 text-lg font-semibold text-ink transition hover:-translate-y-0.5 hover:shadow-[0_8px_24px_-8px_var(--signal)]"
               >
                 לבחירת מידה
@@ -123,6 +131,7 @@ export function Storefront({ children }: { children?: ReactNode }) {
       <SpecStrip />
       {children}
       <OrderForm order={order} />
+      <MobileBar order={order} visible={showBar} />
     </>
   );
 }
@@ -145,6 +154,58 @@ function SpecStrip() {
           </li>
         ))}
       </ul>
+    </div>
+  );
+}
+
+// במובייל: פס תחתון עם המחיר והכפתור, כשהפתיח והסיכום לא על המסך
+function useMobileBar() {
+  const [visible, setVisible] = useState(false);
+  useEffect(() => {
+    const hero = document.getElementById("hero");
+    const summary = document.getElementById("summary");
+    if (!hero || !summary) return;
+    const seen = new Map<Element, boolean>();
+    const io = new IntersectionObserver((entries) => {
+      entries.forEach((e) => seen.set(e.target, e.isIntersecting));
+      setVisible(!seen.get(hero) && !seen.get(summary));
+    });
+    io.observe(hero);
+    io.observe(summary);
+    return () => io.disconnect();
+  }, []);
+  return visible;
+}
+
+function MobileBar({ order, visible }: { order: ReturnType<typeof useOrderState>; visible: boolean }) {
+  const bundle = bundles.find((b) => b.qty === order.qty) ?? bundles[0];
+  const chosen = order.bandColors.slice(0, order.qty).map(colorById);
+  const needsSize = order.size === "";
+  return (
+    <div
+      aria-hidden={!visible}
+      className={`fixed inset-x-0 bottom-0 z-20 bg-ink pb-[env(safe-area-inset-bottom)] text-paper shadow-[0_-8px_24px_-12px_rgb(0_0_0/0.5)] transition-transform duration-300 md:hidden ${
+        visible ? "translate-y-0" : "pointer-events-none translate-y-full"
+      }`}
+    >
+      <div className="flex items-center gap-3 px-4 py-3">
+        <div className="flex -space-x-1.5 space-x-reverse" aria-hidden>
+          {chosen.map((c, i) => (
+            <span key={i} className="size-5 rounded-full border-2 border-ink" style={{ background: c.hex }} />
+          ))}
+        </div>
+        <div className="leading-tight">
+          <span className="block text-xs text-paper/70">{bundle.label}</span>
+          <span className="font-mono text-lg">₪{bundle.price}</span>
+        </div>
+        <a
+          href={needsSize ? "#step-size" : "#summary"}
+          tabIndex={visible ? 0 : -1}
+          className="ms-auto inline-flex min-h-11 items-center rounded-full bg-signal px-5 font-semibold text-ink"
+        >
+          {needsSize ? "לבחירת מידה" : "לסיום"}
+        </a>
+      </div>
     </div>
   );
 }
