@@ -1,18 +1,18 @@
 import type { Metadata, Viewport } from "next";
 import { IBM_Plex_Mono, IBM_Plex_Sans_Hebrew, Karantina } from "next/font/google";
-import { isLive, site } from "@/lib/config";
+import { bundles, colors, isLive, site } from "@/lib/config";
 import "./globals.css";
 
 const display = Karantina({
   variable: "--font-karantina",
   subsets: ["hebrew", "latin"],
-  weight: ["400", "700"],
+  weight: ["700"],
 });
 
 const body = IBM_Plex_Sans_Hebrew({
   variable: "--font-plex",
   subsets: ["hebrew", "latin"],
-  weight: ["400", "500", "600", "700"],
+  weight: ["400", "600", "700"],
 });
 
 const mono = IBM_Plex_Mono({
@@ -21,10 +21,24 @@ const mono = IBM_Plex_Mono({
   weight: ["500"],
 });
 
+const description = `רצועות סיליקון ומגנטיות לשעון חכם, תואמות ל-Apple Watch בכל המידות. ${colors.length} צבעים, ₪${bundles[0].price} לרצועה ו-₪${bundles[1].price} לזוג, משלוח חינם עד הבית.`;
+
 export const metadata: Metadata = {
-  title: `רצועות לשעון חכם | ${site.brandName}`,
-  description:
-    "רצועות סיליקון ומגנטיות לשעון חכם, במגוון צבעים ומידות. משלוח חינם עד הבית.",
+  ...(site.url ? { metadataBase: new URL(site.url) } : {}),
+  title: {
+    default: `רצועות לשעון חכם, סיליקון ומגנטיות | ${site.brandName}`,
+    template: `%s | ${site.brandName}`,
+  },
+  description,
+  openGraph: {
+    type: "website",
+    locale: "he_IL",
+    siteName: site.brandName,
+    title: "צבע חדש לשעון שלך",
+    description,
+    images: [{ url: "/og.png", width: 1200, height: 630, alt: "רצועות לשעון חכם בשמונה צבעים" }],
+  },
+  twitter: { card: "summary_large_image" },
   robots: isLive ? undefined : { index: false, follow: false },
 };
 

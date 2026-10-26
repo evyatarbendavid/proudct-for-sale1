@@ -1,8 +1,13 @@
 import type { Metadata } from "next";
+import { canonical } from "@/lib/seo";
 import { business } from "@/lib/config";
 import { LegalPage } from "../components/LegalPage";
 
-export const metadata: Metadata = { title: "מדיניות פרטיות" };
+export const metadata: Metadata = {
+  title: "מדיניות פרטיות",
+  description: "איזה מידע אישי נאסף בהזמנה, למה, עם מי הוא משותף וכמה זמן נשמר. האתר לא משתמש בעוגיות מעקב.",
+  ...canonical("/privacy"),
+};
 
 export default function PrivacyPage() {
   return (

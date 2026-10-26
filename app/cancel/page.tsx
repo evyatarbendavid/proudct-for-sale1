@@ -1,8 +1,13 @@
 import type { Metadata } from "next";
+import { canonical } from "@/lib/seo";
 import { business, contact } from "@/lib/config";
 import { LegalPage } from "../components/LegalPage";
 
-export const metadata: Metadata = { title: "ביטול עסקה" };
+export const metadata: Metadata = {
+  title: "ביטול עסקה",
+  description: "איך מבטלים הזמנה של רצועה לשעון חכם: תוך 14 יום מקבלת המוצר, דמי ביטול של עד 5% או ₪100, והחזר כספי תוך 14 יום.",
+  ...canonical("/cancel"),
+};
 
 export default function CancelPage() {
   const whatsappHref = contact.whatsappNumber

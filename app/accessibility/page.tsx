@@ -1,8 +1,13 @@
 import type { Metadata } from "next";
+import { canonical } from "@/lib/seo";
 import { business } from "@/lib/config";
 import { LegalPage } from "../components/LegalPage";
 
-export const metadata: Metadata = { title: "הצהרת נגישות" };
+export const metadata: Metadata = {
+  title: "הצהרת נגישות",
+  description: "התאמות הנגישות באתר ופרטי רכז הנגישות, למי שנתקל בבעיה בהזמנה.",
+  ...canonical("/accessibility"),
+};
 
 export default function AccessibilityPage() {
   return (

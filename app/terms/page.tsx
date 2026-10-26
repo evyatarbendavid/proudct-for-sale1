@@ -1,9 +1,14 @@
 import type { Metadata } from "next";
+import { canonical } from "@/lib/seo";
 import Link from "next/link";
 import { bundles, business, delivery, site, warrantyText } from "@/lib/config";
 import { LegalPage } from "../components/LegalPage";
 
-export const metadata: Metadata = { title: "תקנון" };
+export const metadata: Metadata = {
+  title: "תקנון",
+  description: "תנאי השימוש וההזמנה: מחירים, תשלום, זמני אספקה, אחריות וביטול עסקה ברכישת רצועות לשעון חכם.",
+  ...canonical("/terms"),
+};
 
 export default function TermsPage() {
   return (

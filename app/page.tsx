@@ -1,4 +1,6 @@
-import { bandTypes, delivery, isLive, warrantyText } from "@/lib/config";
+import type { Metadata } from "next";
+import { canonical } from "@/lib/seo";
+import { bandTypes, bundles, delivery, isLive, site, warrantyText } from "@/lib/config";
 import { DraftBanner, SiteFooter, SiteHeader } from "./components/SiteChrome";
 import { Storefront } from "./components/Storefront";
 
@@ -9,6 +11,38 @@ const steps = [
     ? { title: "משלמים ומקבלים", text: `תשלום בקישור מאובטח, והרצועות מגיעות עד הבית תוך ${delivery.homeText}.` }
     : { title: "מקבלים עדכון", text: "כשהרצועות זמינות נשלח לך הודעה, ותחליט/י אז אם להזמין." },
 ];
+
+export const metadata: Metadata = {
+  ...canonical("/"),
+};
+
+// נתונים מובנים למוצר. רק במצב מכירה, כשיש באמת הצעה למכירה
+const productJsonLd = {
+  "@context": "https://schema.org",
+  "@type": "Product",
+  name: "רצועה לשעון חכם, סיליקון או מגנטית",
+  description: "רצועות סיליקון ומגנטיות לשעון חכם, תואמות ל-Apple Watch.",
+  brand: { "@type": "Brand", name: site.brandName },
+  offers: {
+    "@type": "AggregateOffer",
+    priceCurrency: "ILS",
+    lowPrice: bundles[0].price,
+    highPrice: bundles[bundles.length - 1].price,
+    offerCount: bundles.length,
+    availability: "https://schema.org/InStock",
+    shippingDetails: {
+      "@type": "OfferShippingDetails",
+      shippingRate: { "@type": "MonetaryAmount", value: 0, currency: "ILS" },
+      shippingDestination: { "@type": "DefinedRegion", addressCountry: "IL" },
+    },
+    hasMerchantReturnPolicy: {
+      "@type": "MerchantReturnPolicy",
+      applicableCountry: "IL",
+      returnPolicyCategory: "https://schema.org/MerchantReturnFiniteReturnWindow",
+      merchantReturnDays: 14,
+    },
+  },
+};
 
 const faq = [
   {
@@ -41,6 +75,12 @@ export default function Home() {
       <SiteHeader />
 
       <main className="flex-1">
+        {isLive && (
+          <script
+            type="application/ld+json"
+            dangerouslySetInnerHTML={{ __html: JSON.stringify(productJsonLd) }}
+          />
+        )}
         <Storefront>
           <section aria-labelledby="how-title" className="mx-auto max-w-6xl px-4 py-14 md:py-20">
             <h2 id="how-title" className="reveal font-display text-[clamp(3rem,8vw,4.5rem)] leading-[0.9] font-bold">

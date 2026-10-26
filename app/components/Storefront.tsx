@@ -20,12 +20,14 @@ export function Storefront({ children }: { children?: ReactNode }) {
       <section className="mx-auto w-full max-w-6xl px-4 pt-6 pb-10 sm:pt-10 md:pb-16">
         <div className="grid gap-x-10 [grid-template-areas:'head'_'stage'_'controls'] md:grid-cols-[1.05fr_1fr] md:[grid-template-areas:'head_stage'_'controls_stage']">
           <div className="[grid-area:head] md:self-end">
-            <p className="rise font-mono text-sm tracking-wide text-graphite">
-              רצועות לשעון חכם · 38–49 מ״מ
-            </p>
-            <h1 className="mt-2 font-display text-[clamp(5.2rem,21vw,11rem)] leading-[0.8] font-bold">
-              <span className="rise block">צבע חדש</span>
-              <span className="rise block text-[#e2470f] [animation-delay:120ms]">לשעון שלך</span>
+            <h1>
+              <span className="rise block font-mono text-sm tracking-wide text-graphite">
+                רצועות לשעון חכם · 38–49 מ״מ
+              </span>
+              <span className="mt-2 block font-display text-[clamp(5.2rem,21vw,11rem)] leading-[0.8] font-bold">
+                <span className="rise block">צבע חדש</span>
+                <span className="rise block text-[#e2470f] [animation-delay:120ms]">לשעון שלך</span>
+              </span>
             </h1>
             <p className="rise mt-5 max-w-md text-lg text-graphite [animation-delay:240ms]">
               רצועות סיליקון ומגנטיות. נכנסות לשעון ויוצאות ממנו בלחיצה, בלי כלים.

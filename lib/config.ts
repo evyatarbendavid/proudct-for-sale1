@@ -5,6 +5,8 @@ export type BandType = "silicone" | "magnetic";
 export const site = {
   // TODO: שם המותג אחרי שיוחלט (PLAN.md סעיף 9)
   brandName: "שם העסק",
+  // TODO: כתובת האתר המלאה אחרי שיהיה דומיין, למשל https://example.co.il. בלעדיה אין canonical ו-sitemap
+  url: "",
   // "waitlist": טרום השקה. אין מכירה ואין תשלום, רק השארת פרטים בוואטסאפ, וגוגל לא מאנדקס.
   // "live": מכירה. רק אחרי פתיחת עוסק פטור והשלמת כל ה-TODO בקובץ.
   mode: "waitlist" as "waitlist" | "live",

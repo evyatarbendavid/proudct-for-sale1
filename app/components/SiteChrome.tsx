@@ -39,14 +39,14 @@ export function SiteFooter() {
           ביטול עסקה
         </Link>
 
-        <nav aria-label="מידע משפטי" className="mt-6 flex flex-wrap gap-x-6 gap-y-2">
-          <Link href="/terms" className="underline underline-offset-4">
+        <nav aria-label="מידע משפטי" className="mt-4 flex flex-wrap gap-x-6">
+          <Link href="/terms" className="inline-block py-3 underline underline-offset-4">
             תקנון
           </Link>
-          <Link href="/privacy" className="underline underline-offset-4">
+          <Link href="/privacy" className="inline-block py-3 underline underline-offset-4">
             מדיניות פרטיות
           </Link>
-          <Link href="/accessibility" className="underline underline-offset-4">
+          <Link href="/accessibility" className="inline-block py-3 underline underline-offset-4">
             הצהרת נגישות
           </Link>
         </nav>

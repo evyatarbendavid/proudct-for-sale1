@@ -90,7 +90,7 @@ export function OrderForm({ order }: { order: OrderState }) {
             <Step n={2} title="מידת השעון">
               <p className="-mt-2 mb-3 text-sm text-graphite">
                 המידה כתובה על גב השעון.{" "}
-                <a href="#faq-size" className="underline underline-offset-4">
+                <a href="#faq-size" className="inline-block py-2 underline underline-offset-4">
                   איך בודקים
                 </a>
               </p>

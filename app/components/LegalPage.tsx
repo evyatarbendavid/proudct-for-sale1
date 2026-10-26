@@ -16,7 +16,7 @@ export function LegalPage({
       <DraftBanner />
       <SiteHeader />
       <main className="mx-auto w-full max-w-3xl flex-1 px-4 py-10">
-        <Link href="/" className="text-sm text-graphite underline">
+        <Link href="/" className="inline-block py-2 text-sm text-graphite underline">
           חזרה לדף הראשי
         </Link>
         <h1 className="mt-4 font-display text-6xl leading-[0.9] font-bold">{title}</h1>
