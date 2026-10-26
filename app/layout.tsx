@@ -1,11 +1,24 @@
 import type { Metadata, Viewport } from "next";
-import { Heebo } from "next/font/google";
+import { IBM_Plex_Mono, IBM_Plex_Sans_Hebrew, Karantina } from "next/font/google";
 import { isLive, site } from "@/lib/config";
 import "./globals.css";
 
-const heebo = Heebo({
-  variable: "--font-heebo",
+const display = Karantina({
+  variable: "--font-karantina",
   subsets: ["hebrew", "latin"],
+  weight: ["400", "700"],
+});
+
+const body = IBM_Plex_Sans_Hebrew({
+  variable: "--font-plex",
+  subsets: ["hebrew", "latin"],
+  weight: ["400", "500", "600", "700"],
+});
+
+const mono = IBM_Plex_Mono({
+  variable: "--font-plex-mono",
+  subsets: ["latin"],
+  weight: ["500"],
 });
 
 export const metadata: Metadata = {
@@ -16,12 +29,16 @@ export const metadata: Metadata = {
 };
 
 export const viewport: Viewport = {
-  themeColor: "#faf8f5",
+  themeColor: "#e4e7eb",
 };
 
 export default function RootLayout({ children }: LayoutProps<"/">) {
   return (
-    <html lang="he" dir="rtl" className={`${heebo.variable} h-full antialiased`}>
+    <html
+      lang="he"
+      dir="rtl"
+      className={`${display.variable} ${body.variable} ${mono.variable} h-full antialiased`}
+    >
       <body className="flex min-h-full flex-col font-sans">{children}</body>
     </html>
   );

@@ -1,32 +1,20 @@
-import { bandTypes, bundles, colors, delivery, warrantyText } from "@/lib/config";
-import { BandPreview } from "./components/BandPreview";
-import { OrderForm } from "./components/OrderForm";
+import { bandTypes, delivery, isLive, warrantyText } from "@/lib/config";
 import { DraftBanner, SiteFooter, SiteHeader } from "./components/SiteChrome";
+import { Storefront } from "./components/Storefront";
 
-const benefits = [
-  {
-    title: "החלפה בשנייה",
-    text: "נכנסת ויוצאת מהשעון בלחיצה, בלי כלים.",
-  },
-  {
-    title: "צבע לכל מצב",
-    text: "אחת לאימון, אחת לעבודה, אחת לערב.",
-  },
-  {
-    title: "משלוח חינם",
-    text: `עד הבית, ${delivery.homeText}. כתוב מראש, בלי הפתעות.`,
-  },
-  {
-    title: "תשלום רק אחרי אישור",
-    text: "קודם מאשרים איתך מידה וצבע, ורק אז משלמים.",
-  },
+const steps = [
+  { title: "בוחרים", text: "סוג, מידה, כמות וצבע לכל רצועה." },
+  { title: "שולחים בוואטסאפ", text: "ההזמנה נשלחת אלינו עם כל הפרטים, ואנחנו מאשרים מידה וצבע." },
+  isLive
+    ? { title: "משלמים ומקבלים", text: `תשלום בקישור מאובטח, והרצועות מגיעות עד הבית תוך ${delivery.homeText}.` }
+    : { title: "מקבלים עדכון", text: "כשהרצועות זמינות נשלח לך הודעה, ותחליט/י אז אם להזמין." },
 ];
 
 const faq = [
   {
     id: "faq-size",
     q: "איך יודעים איזו מידה מתאימה?",
-    a: "המידה של השעון כתובה על הגב שלו, במילימטרים (למשל 41mm או 45mm). בוחרים את הקבוצה שהמספר שלך נמצא בה. אם לא בטוחים, שולחים לנו תמונה של גב השעון בוואטסאפ ונבדוק.",
+    a: "המידה כתובה על גב השעון, במילימטרים (למשל 41mm או 45mm). בוחרים את הקבוצה שהמספר שלך נמצא בה. אם לא בטוחים, שולחים לנו בוואטסאפ תמונה של גב השעון ונבדוק.",
   },
   {
     id: "faq-fit",
@@ -36,22 +24,15 @@ const faq = [
   {
     id: "faq-delivery",
     q: "כמה זמן לוקח המשלוח?",
-    a: `${delivery.homeText} מרגע התשלום. הרצועות נשלחות מהספק ישירות אליך עם מספר מעקב, שנשלח אליך בוואטסאפ.`,
+    a: `${delivery.homeText} מרגע התשלום. הרצועות נשלחות מהספק ישירות אליך, ומספר מעקב נשלח אליך בוואטסאפ.`,
   },
   {
     id: "faq-return",
     q: "מה אם המידה לא מתאימה או שאני רוצה לבטל?",
-    a: "אפשר לבטל עסקה בתוך 14 יום מקבלת הרצועה, לפי חוק הגנת הצרכן. כל הפרטים בעמוד ביטול עסקה.",
+    a: "אפשר לבטל עסקה תוך 14 יום מקבלת הרצועה, לפי חוק הגנת הצרכן. כל הפרטים בעמוד ביטול עסקה.",
   },
-  {
-    id: "faq-warranty",
-    q: "מה האחריות?",
-    a: warrantyText,
-  },
+  { id: "faq-warranty", q: "מה האחריות?", a: warrantyText },
 ];
-
-const minPrice = bundles[0].price;
-const pair = bundles.find((b) => b.qty === 2);
 
 export default function Home() {
   return (
@@ -59,89 +40,66 @@ export default function Home() {
       <DraftBanner />
       <SiteHeader />
 
-      <main className="mx-auto w-full max-w-5xl flex-1 px-4">
-        {/* פתיח */}
-        <section className="grid items-center gap-8 py-10 sm:py-14 md:grid-cols-2">
-          <div>
-            <h1 className="text-3xl font-extrabold leading-tight sm:text-5xl">
-              שעון אחד,
-              <br />
-              צבע לכל יום.
-            </h1>
-            <p className="mt-4 text-lg text-muted">
-              רצועות סיליקון ומגנטיות לשעון חכם, ב-{colors.length} צבעים ובכל המידות. מחליפים בשנייה.
-            </p>
-            <p className="mt-6 text-lg">
-              מ-<strong className="text-2xl">₪{minPrice}</strong>
-              {pair && (
-                <>
-                  {" "}
-                  · זוג ב-<strong className="text-2xl">₪{pair.price}</strong>
-                </>
-              )}
-            </p>
-            <p className="mt-1 text-sm text-muted">משלוח חינם · {delivery.homeText}</p>
-            <a
-              href="#order"
-              className="mt-6 inline-block rounded-2xl bg-accent px-6 py-4 font-semibold text-white hover:bg-accent-strong"
-            >
-              לבחירת רצועה
-            </a>
-          </div>
+      <main className="flex-1">
+        <Storefront>
+          <section aria-labelledby="how-title" className="mx-auto max-w-6xl px-4 py-14 md:py-20">
+            <h2 id="how-title" className="reveal font-display text-[clamp(3rem,8vw,4.5rem)] leading-[0.9] font-bold">
+              איך זה עובד
+            </h2>
+            <ol className="mt-8 grid gap-8 md:grid-cols-3">
+              {steps.map((s, i) => (
+                <li key={s.title} className="reveal flex gap-4">
+                  <span className="font-display text-7xl leading-[0.75] font-bold text-[#e2470f]">{i + 1}</span>
+                  <div>
+                    <h3 className="text-lg font-semibold">{s.title}</h3>
+                    <p className="mt-1 text-graphite">{s.text}</p>
+                  </div>
+                </li>
+              ))}
+            </ol>
+          </section>
+        </Storefront>
 
-          {/* TODO: להחליף בסרטון קצר של הרצועות על היד, מהדגימות */}
-          <div className="flex aspect-square items-center justify-center gap-4 rounded-3xl bg-accent-soft p-6">
-            <BandPreview hex="#1e2b4a" type="silicone" className="h-56 w-auto sm:h-72" />
-            <BandPreview hex="#e8a5b5" type="magnetic" className="hidden h-56 w-auto sm:block sm:h-72" />
-          </div>
-        </section>
-
-        {/* יתרונות */}
-        <section aria-label="יתרונות" className="grid gap-4 pb-10 sm:grid-cols-2 lg:grid-cols-4">
-          {benefits.map((b) => (
-            <div key={b.title} className="rounded-2xl border border-line bg-surface p-5">
-              <h2 className="font-semibold">{b.title}</h2>
-              <p className="mt-1 text-sm text-muted">{b.text}</p>
-            </div>
-          ))}
-        </section>
-
-        <OrderForm />
-
-        {/* מפרט */}
-        <section aria-labelledby="specs-title" className="py-12">
-          <h2 id="specs-title" className="text-2xl font-bold">
+        <section aria-labelledby="specs-title" className="mx-auto max-w-6xl px-4 py-14 md:py-20">
+          <h2 id="specs-title" className="reveal font-display text-[clamp(3rem,8vw,4.5rem)] leading-[0.9] font-bold">
             מפרט
           </h2>
-          <div className="mt-5 grid gap-4 sm:grid-cols-2">
+          <div className="mt-8 grid gap-px overflow-hidden rounded-md border border-line bg-line md:grid-cols-2">
             {Object.values(bandTypes).map((t) => (
-              <div key={t.name} className="rounded-2xl border border-line bg-surface p-5">
-                <h3 className="font-semibold">{t.name}</h3>
-                <p className="mt-1 text-sm text-muted">{t.description}</p>
-                <p className="mt-3 text-sm">
-                  <span className="text-muted">מידות: </span>
-                  {t.sizes.join(" · ")}
-                </p>
+              <div key={t.name} className="bg-paper p-6">
+                <h3 className="text-lg font-semibold">{t.name}</h3>
+                <p className="mt-1 text-graphite">{t.description}</p>
+                <dl className="mt-4 flex gap-3 text-sm">
+                  <dt className="text-graphite">מידות</dt>
+                  <dd className="font-mono">{t.sizes.join(" · ")}</dd>
+                </dl>
               </div>
             ))}
           </div>
         </section>
 
-        {/* שאלות נפוצות */}
-        <section aria-labelledby="faq-title" className="pb-14">
-          <h2 id="faq-title" className="text-2xl font-bold">
-            שאלות נפוצות
+        <section aria-labelledby="faq-title" className="mx-auto max-w-3xl px-4 pb-20">
+          <h2 id="faq-title" className="reveal font-display text-[clamp(3rem,8vw,4.5rem)] leading-[0.9] font-bold">
+            שאלות
           </h2>
-          <div className="mt-5 divide-y divide-line rounded-2xl border border-line bg-surface">
+          <div className="mt-8 border-t border-line">
             {faq.map((item) => (
-              <details key={item.id} id={item.id} open={item.id === "faq-size"} className="group p-5">
-                <summary className="flex cursor-pointer list-none items-center justify-between font-semibold">
+              <details
+                key={item.id}
+                id={item.id}
+                open={item.id === "faq-size"}
+                className="group scroll-mt-4 border-b border-line py-5"
+              >
+                <summary className="flex cursor-pointer list-none items-center justify-between gap-4 text-lg font-semibold">
                   {item.q}
-                  <span aria-hidden className="text-muted transition group-open:rotate-45">
+                  <span
+                    aria-hidden
+                    className="grid size-8 shrink-0 place-items-center rounded-full border border-line font-mono text-graphite transition-transform group-open:rotate-45"
+                  >
                     +
                   </span>
                 </summary>
-                <p className="mt-3 text-muted">{item.a}</p>
+                <p className="mt-3 max-w-prose text-graphite">{item.a}</p>
               </details>
             ))}
           </div>

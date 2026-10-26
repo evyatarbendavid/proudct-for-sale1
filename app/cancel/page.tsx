@@ -13,7 +13,7 @@ export default function CancelPage() {
 
   return (
     <LegalPage title="ביטול עסקה" updated="26.10.2026">
-      <section className="rounded-2xl border-2 border-foreground bg-surface p-5">
+      <section className="rounded-md border-2 border-ink bg-paper p-5">
         <h2 className="!mt-0">איך מבטלים</h2>
         <p className="mt-2">שולחים הודעת ביטול באחת מהדרכים הבאות, עם שם מלא, טלפון ותאריך ההזמנה:</p>
         <ul className="mt-2">
@@ -24,7 +24,7 @@ export default function CancelPage() {
                 לשליחת הודעת ביטול
               </a>
             ) : (
-              <span className="text-muted">[יחובר לפני ההשקה]</span>
+              <span className="text-graphite">[יחובר לפני ההשקה]</span>
             )}
           </li>
           <li>דוא״ל: {business.email}</li>
