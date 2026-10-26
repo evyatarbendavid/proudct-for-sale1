@@ -20,9 +20,10 @@ export function Storefront({ children }: { children?: ReactNode }) {
       <section className="mx-auto w-full max-w-6xl px-4 pt-6 pb-10 sm:pt-10 md:pb-16">
         <div className="grid gap-x-10 [grid-template-areas:'head'_'stage'_'controls'] md:grid-cols-[1.05fr_1fr] md:[grid-template-areas:'head_stage'_'controls_stage']">
           <div className="[grid-area:head] md:self-end">
+            {/* avoid-ai-design-ignore: SD5 — השורה הכתומה היא צבע המותג, וחוזרת גם בסרטון */}
             <h1>
-              <span className="rise block font-mono text-sm tracking-wide text-graphite">
-                רצועות לשעון חכם · 38–49 מ״מ
+              <span className="rise block text-base font-semibold text-graphite">
+                רצועות לשעון חכם, בגדלים 38 עד 49 מ״מ
               </span>
               <span className="mt-2 block font-display text-[clamp(5.2rem,21vw,11rem)] leading-[0.8] font-bold">
                 <span className="rise block">צבע חדש</span>
@@ -104,9 +105,15 @@ export function Storefront({ children }: { children?: ReactNode }) {
               >
                 לבחירת מידה
               </a>
-              <p className="font-mono text-sm text-graphite">
-                ₪{single.price} לרצועה
-                {pair && <> · ₪{pair.price} לזוג</>}
+              <p className="flex gap-4 text-sm text-graphite">
+                <span>
+                  <span className="font-mono text-ink">₪{single.price}</span> לרצועה
+                </span>
+                {pair && (
+                  <span>
+                    <span className="font-mono text-ink">₪{pair.price}</span> לזוג
+                  </span>
+                )}
               </p>
             </div>
           </div>
