@@ -5,9 +5,12 @@ export type BandType = "silicone" | "magnetic";
 export const site = {
   // TODO: שם המותג אחרי שיוחלט (PLAN.md סעיף 9)
   brandName: "שם העסק",
-  // כל עוד true, מוצג פס עליון שהדף בבנייה ואין עדיין מכירה
-  isDraft: true,
+  // "waitlist": טרום השקה. אין מכירה ואין תשלום, רק השארת פרטים בוואטסאפ, וגוגל לא מאנדקס.
+  // "live": מכירה. רק אחרי פתיחת עוסק פטור והשלמת כל ה-TODO בקובץ.
+  mode: "waitlist" as "waitlist" | "live",
 };
+
+export const isLive = site.mode === "live";
 
 // פרטי העוסק, חובה לפי חוק הגנת הצרכן (מכר מרחוק)
 export const business = {

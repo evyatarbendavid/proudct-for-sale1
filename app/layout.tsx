@@ -1,6 +1,6 @@
 import type { Metadata, Viewport } from "next";
 import { Heebo } from "next/font/google";
-import { site } from "@/lib/config";
+import { isLive, site } from "@/lib/config";
 import "./globals.css";
 
 const heebo = Heebo({
@@ -12,7 +12,7 @@ export const metadata: Metadata = {
   title: `רצועות לשעון חכם | ${site.brandName}`,
   description:
     "רצועות סיליקון ומגנטיות לשעון חכם, במגוון צבעים ומידות. משלוח חינם עד הבית.",
-  robots: site.isDraft ? { index: false, follow: false } : undefined,
+  robots: isLive ? undefined : { index: false, follow: false },
 };
 
 export const viewport: Viewport = {

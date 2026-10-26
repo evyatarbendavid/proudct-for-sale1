@@ -9,6 +9,7 @@ import {
   contact,
   defaultQty,
   delivery,
+  isLive,
   paymentLinks,
   type BandType,
   type ColorId,
@@ -36,7 +37,8 @@ export function OrderForm() {
   const sizes = bandTypes[type].sizes;
   const chosen = bandColors.slice(0, qty).map(colorById);
   const previewColor = colorById(bandColors[Math.min(activeBand, qty - 1)]);
-  const ready = size !== "" && agreed;
+  // בטרום השקה אין עסקה, ולכן אין צורך באישור תקנון
+  const ready = size !== "" && (agreed || !isLive);
 
   function chooseType(next: BandType) {
     setType(next);
@@ -53,20 +55,22 @@ export function OrderForm() {
   }
 
   const message = [
-    "שלום, אני רוצה להזמין:",
+    isLive
+      ? "שלום, אני רוצה להזמין:"
+      : "שלום, אשמח לקבל עדכון כשהרצועות זמינות. מה שמעניין אותי:",
     `${bundle.label} – ${bandTypes[type].name}`,
     `מידה: ${size || "לא נבחרה"}`,
     `צבעים: ${chosen.map((c) => c.name).join(", ")}`,
-    `סה״כ: ₪${bundle.price}`,
+    `${isLive ? "סה״כ" : "מחיר השקה"}: ₪${bundle.price}`,
     method === "home"
-      ? "משלוח עד הבית (אשלח כתובת)"
+      ? `משלוח עד הבית${isLive ? " (אשלח כתובת)" : ""}`
       : `מסירה אישית באזור ${delivery.personal.area}`,
   ].join("\n");
 
   const whatsappHref = contact.whatsappNumber
     ? `https://wa.me/${contact.whatsappNumber}?text=${encodeURIComponent(message)}`
     : "";
-  const paymentHref = paymentLinks[qty] ?? "";
+  const paymentHref = isLive ? (paymentLinks[qty] ?? "") : "";
 
   return (
     <section
@@ -75,7 +79,7 @@ export function OrderForm() {
       className="rounded-3xl border border-line bg-surface p-5 shadow-sm sm:p-8"
     >
       <h2 id="order-title" className="text-2xl font-bold">
-        בניית ההזמנה
+        {isLive ? "בניית ההזמנה" : "בחירת הרצועה שלך"}
       </h2>
 
       <div className="mt-6 grid gap-8 lg:grid-cols-[1fr_220px]">
@@ -301,29 +305,31 @@ export function OrderForm() {
             <dd>חינם</dd>
           </div>
           <div className="flex justify-between pt-2 text-lg font-bold">
-            <dt>סה״כ לתשלום</dt>
+            <dt>{isLive ? "סה״כ לתשלום" : "מחיר השקה"}</dt>
             <dd>₪{bundle.price}</dd>
           </div>
         </dl>
 
-        <label className="mt-5 flex items-start gap-2 text-sm">
-          <input
-            type="checkbox"
-            checked={agreed}
-            onChange={(e) => setAgreed(e.target.checked)}
-            className="mt-0.5 size-4 accent-[var(--accent)]"
-          />
-          <span>
-            קראתי ואני מסכים/ה ל
-            <Link href="/terms" className="underline">
-              תקנון
-            </Link>{" "}
-            ול
-            <Link href="/cancel" className="underline">
-              תנאי ביטול העסקה
-            </Link>
-          </span>
-        </label>
+        {isLive && (
+          <label className="mt-5 flex items-start gap-2 text-sm">
+            <input
+              type="checkbox"
+              checked={agreed}
+              onChange={(e) => setAgreed(e.target.checked)}
+              className="mt-0.5 size-4 accent-[var(--accent)]"
+            />
+            <span>
+              קראתי ואני מסכים/ה ל
+              <Link href="/terms" className="underline">
+                תקנון
+              </Link>{" "}
+              ול
+              <Link href="/cancel" className="underline">
+                תנאי ביטול העסקה
+              </Link>
+            </span>
+          </label>
+        )}
 
         {!ready && (
           <p className="mt-3 text-sm text-muted" aria-live="polite">
@@ -342,11 +348,11 @@ export function OrderForm() {
                 ready ? "bg-accent hover:bg-accent-strong" : "pointer-events-none bg-muted/50"
               }`}
             >
-              להזמנה בוואטסאפ
+              {isLive ? "להזמנה בוואטסאפ" : "תעדכנו אותי בהשקה"}
             </a>
           ) : (
             <span className="rounded-2xl bg-muted/40 px-5 py-4 text-center font-semibold text-white">
-              וואטסאפ יחובר לפני ההשקה
+              וואטסאפ יחובר בקרוב
             </span>
           )}
           {paymentHref && (
@@ -366,8 +372,9 @@ export function OrderForm() {
           )}
         </div>
         <p className="mt-3 text-xs text-muted">
-          אחרי שליחת ההזמנה בוואטסאפ נאשר את הפרטים ונשלח קישור לתשלום מאובטח באשראי.
-          ההזמנה יוצאת לדרך רק אחרי התשלום.
+          {isLive
+            ? "אחרי שליחת ההזמנה בוואטסאפ נאשר את הפרטים ונשלח קישור לתשלום מאובטח באשראי. ההזמנה יוצאת לדרך רק אחרי התשלום."
+            : "זו לא הזמנה ואין תשלום. נשלח לך הודעה כשהרצועות זמינות, ותחליט/י אז אם להזמין."}
         </p>
       </div>
     </section>
