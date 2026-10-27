@@ -91,6 +91,7 @@ export type Product = {
   description: string;
   features: string[];
   sizes: SizeOption[];
+  /** הצבע הראשון הוא ברירת המחדל, בכרטיס בקטלוג ובדף המוצר */
   colors: ColorId[];
   /** עלות משוערת בשקלים לרצועה, כולל משלוח מהספק */
   cost: number;
@@ -110,7 +111,7 @@ export const products: Product[] = [
     description: "רצועה רכה וגמישה, עמידה במים ובזיעה. סגירה בפין וחורים, מתאימה לאימונים וליום יום.",
     features: ["עמידה במים ובזיעה", "סגירה בפין וחורים", "נכנסת לשעון בלחיצה"],
     sizes: appleSizes,
-    colors: ["black", "white", "gray", "navy", "olive", "sand", "pink", "wine"],
+    colors: ["navy", "black", "white", "gray", "olive", "sand", "pink", "wine"],
     cost: 10,
     costVerified: false,
     sourceUrl: "https://he.aliexpress.com/item/1005006706836534.html",
@@ -124,7 +125,7 @@ export const products: Product[] = [
     description: "סגירה מגנטית בלי חורים ובלי אבזם. מתכווננת לכל היקף יד ונסגרת בתנועה אחת.",
     features: ["סוגר מגנטי", "מתכווננת לכל היקף יד", "בלי חורים"],
     sizes: appleSizes,
-    colors: ["black", "navy", "olive", "sand", "pink", "orange"],
+    colors: ["orange", "black", "navy", "olive", "sand", "pink"],
     cost: 12,
     costVerified: false,
     sourceUrl: "https://he.aliexpress.com/item/1005010439452171.html",
@@ -138,7 +139,7 @@ export const products: Product[] = [
     description: "לולאה ארוגה ונושמת עם סגירת סקוץ׳. קלה מאוד, נוחה לשינה ולחום.",
     features: ["ארוג ונושם", "סגירת סקוץ׳", "קלה מאוד"],
     sizes: appleSizes,
-    colors: ["black", "navy", "olive", "sand", "pink", "orange"],
+    colors: ["sand", "black", "navy", "olive", "pink", "orange"],
     cost: 12,
     costVerified: false,
     sizesVerified: false,
@@ -177,7 +178,7 @@ export const products: Product[] = [
     description: "חוליות נירוסטה עם סוגר מתקפל. את האורך מתאימים בהסרת חוליות.",
     features: ["חוליות נירוסטה", "סוגר מתקפל", "אורך מתכוונן"],
     sizes: appleSizes,
-    colors: ["silver", "black", "rose"],
+    colors: ["black", "silver", "rose"],
     cost: 25,
     costVerified: false,
     sizesVerified: false,
@@ -190,7 +191,7 @@ export const products: Product[] = [
     description: "רצועת סיליקון עם פינים לשחרור מהיר, בלי כלים. מתאימה לשעונים עם זיזים ברוחב 20 או 22 מ״מ.",
     features: ["שחרור מהיר בלי כלים", "עמידה במים", "20 או 22 מ״מ"],
     sizes: quickReleaseSizes,
-    colors: ["black", "navy", "olive", "gray", "orange", "white"],
+    colors: ["olive", "black", "navy", "gray", "orange", "white"],
     cost: 8,
     costVerified: false,
     sizesVerified: false,
@@ -203,7 +204,7 @@ export const products: Product[] = [
     description: "ניילון ארוג ונושם עם שחרור מהיר. קל, ומתייבש מהר אחרי אימון.",
     features: ["ארוג ונושם", "שחרור מהיר", "20 או 22 מ״מ"],
     sizes: quickReleaseSizes,
-    colors: ["black", "navy", "olive", "sand"],
+    colors: ["navy", "black", "olive", "sand"],
     cost: 10,
     costVerified: false,
     sizesVerified: false,
@@ -229,7 +230,7 @@ export const products: Product[] = [
     description: "רצועת סיליקון עם מחבר QuickFit שננעל בלחיצה. לאימונים, לשחייה ולטיולים.",
     features: ["מחבר QuickFit", "עמידה במים", "20, 22 או 26 מ״מ"],
     sizes: garminSizes,
-    colors: ["black", "navy", "olive", "orange", "gray"],
+    colors: ["orange", "black", "navy", "olive", "gray"],
     cost: 12,
     costVerified: false,
     sizesVerified: false,
@@ -242,7 +243,7 @@ export const products: Product[] = [
     description: "רצועה רכה לצמיד הכושר של Xiaomi. מחליפים בשנייה ומתאימים צבע לבגד.",
     features: ["רכה וקלה", "עמידה במים", "Smart Band 8 ו-9"],
     sizes: [{ id: "one", label: "Smart Band 8/9", detail: "מידה אחת, מתכווננת" }],
-    colors: ["black", "navy", "olive", "pink", "white", "orange"],
+    colors: ["pink", "black", "navy", "olive", "white", "orange"],
     cost: 5,
     costVerified: false,
     sizesVerified: false,
@@ -258,7 +259,7 @@ export const products: Product[] = [
       { id: "s", label: "S", detail: "היקף יד קטן" },
       { id: "l", label: "L", detail: "היקף יד גדול" },
     ],
-    colors: ["black", "navy", "gray", "pink", "white"],
+    colors: ["white", "black", "navy", "gray", "pink"],
     cost: 8,
     costVerified: false,
     sizesVerified: false,

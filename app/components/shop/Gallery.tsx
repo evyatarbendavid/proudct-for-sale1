@@ -21,17 +21,28 @@ export function Gallery({ order }: { order: ProductOrder }) {
   const track = useRef<HTMLDivElement>(null);
   const hex = colorById(color).hex;
 
+  // לאן גוללים כרגע אחרי לחיצה. בזמן הגלילה לא מעדכנים, כדי שהסימון לא יקפוץ דרך התמונות שבדרך
+  const target = useRef<number | null>(null);
+
   // במובייל: החלקה. מעדכנים את הנקודה לפי מה שבמרכז
   function onScroll() {
     const el = track.current;
     if (!el) return;
-    setActive(Math.round(Math.abs(el.scrollLeft) / el.clientWidth));
+    const i = Math.round(Math.abs(el.scrollLeft) / el.clientWidth);
+    if (target.current !== null) {
+      if (i !== target.current) return;
+      target.current = null;
+    }
+    setActive(i);
   }
 
   // רצועה אחת לשני המצבים: במובייל מחליקים, בדסקטופ התמונות הממוזערות מזיזות אותה
   function show(i: number) {
+    const el = track.current;
     setActive(i);
-    track.current?.scrollTo({ left: -i * track.current.clientWidth, behavior: "smooth" });
+    if (!el || Math.round(Math.abs(el.scrollLeft) / el.clientWidth) === i) return;
+    target.current = i;
+    el.scrollTo({ left: -i * el.clientWidth, behavior: "smooth" });
   }
 
   const view = (item: Item, i: number) => (
@@ -85,6 +96,11 @@ export function Gallery({ order }: { order: ProductOrder }) {
         <div
           ref={track}
           onScroll={onScroll}
+          onScrollEnd={() => {
+            // אם הגלילה נעצרה לפני היעד (למשל המשתמש החליק באמצע), חוזרים לעקוב אחרי המיקום
+            target.current = null;
+            onScroll();
+          }}
           className="flex snap-x snap-mandatory overflow-x-auto [scrollbar-width:none] md:overflow-hidden md:rounded-lg"
         >
           {ITEMS.map(view)}
