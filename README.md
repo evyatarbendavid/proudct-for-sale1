@@ -1,6 +1,8 @@
-# דף נחיתה: רצועות לשעון חכם
+# חנות: רצועות לשעון חכם
 
-Next.js 16 עם Tailwind 4, RTL בעברית. התוכנית העסקית ב-[PLAN.md](PLAN.md), והמחקר בתיקייה [research](research).
+Next.js 16 עם Tailwind 4, RTL בעברית. חנות קטנה במבנה של דף מוצר באלי אקספרס: קטלוג של 12 רצועות זולות ל-Apple Watch, Samsung, Huawei, Amazfit, Garmin, Xiaomi ו-Fitbit, ודף לכל מוצר עם גלריה, בחירת צבע ומידה, והזמנה בוואטסאפ.
+
+התוכנית העסקית ב-[PLAN.md](PLAN.md), המחקר בתיקייה [research](research), וכללי העיצוב ב-[DESIGN.md](DESIGN.md).
 
 ## הרצה
 
@@ -13,30 +15,43 @@ npm run lint
 
 ## מה להשלים לפני השקה
 
-כל הנתונים נמצאים בקובץ אחד: [lib/config.ts](lib/config.ts). כל שורה עם `TODO` היא placeholder.
+פרטי העסק נמצאים ב-[lib/config.ts](lib/config.ts), והמוצרים ב-[lib/catalog.ts](lib/catalog.ts). כל שורה עם `TODO` היא placeholder.
 
-| מה | איפה בקובץ |
+| מה | איפה |
 | --- | --- |
-| שם המותג | `site.brandName` |
-| שם, מספר עוסק, כתובת, טלפון, דוא"ל (חובה לפי חוק) | `business` |
-| מספר וואטסאפ (972XXXXXXXXX) | `contact.whatsappNumber` |
-| קישורי תשלום Grow לכל חבילה | `paymentLinks` |
-| מידות לכל סוג, לאמת מול אלי אקספרס | `bandTypes` |
-| 8–10 הצבעים אחרי הדגימות | `colors` |
-| אזור למסירה אישית | `delivery.personal.area` |
-| תנאי אחריות | `warrantyText` |
-| מעבר ממצב טרום השקה למכירה (רק אחרי פתיחת עוסק) | `site.mode = "live"` |
+| שם המותג | `site.brandName` ב-config |
+| שם, מספר עוסק, כתובת, טלפון, דוא"ל (חובה לפי חוק) | `business` ב-config |
+| מספר וואטסאפ (972XXXXXXXXX) | `contact.whatsappNumber` ב-config |
+| קישור תשלום Grow | `paymentLink` ב-config |
+| אזור למסירה אישית | `delivery.personal.area` ב-config |
+| תנאי אחריות | `warrantyText` ב-config |
+| עלות, קישור לספק, צבעים ומידות לכל מוצר | `products` בקטלוג. ההסבר ב-[research/catalog.md](research/catalog.md) |
+| מעבר ממצב טרום השקה למכירה (רק אחרי פתיחת עוסק) | `site.mode = "live"` ב-config |
+
+## מחירים
+
+המחיר מחושב מהעלות: בערך פי 2, מעוגל לסכום שנגמר ב-9, ולפחות ₪19. על זוג יש 10% הנחה. כשמעדכנים את `cost` של מוצר, המחיר מתעדכן בכל האתר ובתקנון. הפירוט ב-[research/catalog.md](research/catalog.md).
 
 ## שני מצבים
 
 - **`waitlist`** (ברירת המחדל): אין מכירה ואין תשלום. הכפתור שולח בוואטסאפ "תעדכנו אותי" עם הבחירה של הלקוח, והדף לא מאונדקס בגוגל. אפשר להפעיל את זה עוד לפני שיש עוסק, כדי לבדוק ביקוש.
 - **`live`**: הזמנה ותשלום. מוצגים אישור תקנון, פרטי העוסק בתחתית וכפתורי התשלום.
 
-התמונות בדף הן הדמיה גרפית (`app/components/BandPreview.tsx`). אחרי שהדגימות מגיעות, מחליפים בתמונות ובסרטון אמיתיים.
+## תמונות
+
+עד שיגיעו תמונות אמיתיות, הגלריה מציגה את השעון בתלת-ממד (`lib/watchModel.ts`), ותמונות שצולמו ממנו, עם הכיתוב "הדמיה". כל מוצר מצולם בכל צבע משלוש זוויות, לתוך `public/renders`. כשמוסיפים מוצר או צבע, מצלמים מחדש:
+
+```bash
+npm run build && npx next start -p 3200
+node scripts/render-products.mjs http://localhost:3200   # בטרמינל אחר
+```
+
+הדף `/render` משמש רק לצילום הזה, ולא מאונדקס.
 
 ## דפים
 
-- `/`: דף המוצר וההזמנה
+- `/`: קטלוג, עם סינון לפי סוג שעון וחיפוש (`?family=`, `?q=`)
+- `/p/<slug>`: דף מוצר והזמנה
 - `/terms`: תקנון
 - `/cancel`: ביטול עסקה
 - `/privacy`: מדיניות פרטיות

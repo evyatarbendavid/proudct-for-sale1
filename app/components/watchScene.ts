@@ -1,17 +1,25 @@
 import * as THREE from "three";
 import { RoomEnvironment } from "three/examples/jsm/environments/RoomEnvironment.js";
-import type { BandType } from "@/lib/config";
+import type { CaseKind, Material } from "@/lib/catalog";
 import { buildWatch } from "@/lib/watchModel";
 
 export type WatchScene = {
   setColor(hex: string): void;
-  setType(type: BandType): void;
+  /** גוף או חומר אחר: בונה את המודל מחדש */
+  setSpec(caseKind: CaseKind, material: Material): void;
   dispose(): void;
 };
 
 export function createWatchScene(
   host: HTMLElement,
-  initial: { color: string; type: BandType; onReady?: () => void },
+  initial: {
+    color: string;
+    caseKind: CaseKind;
+    material: Material;
+    onReady?: () => void;
+    /** זווית קבועה בלי תנועה, לצילום תמונות הגלריה */
+    still?: number;
+  },
 ): WatchScene | null {
   let renderer: THREE.WebGLRenderer;
   try {
@@ -19,7 +27,7 @@ export function createWatchScene(
   } catch {
     return null;
   }
-  const reduceMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+  const reduceMotion = initial.still !== undefined || window.matchMedia("(prefers-reduced-motion: reduce)").matches;
 
   renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
   renderer.outputColorSpace = THREE.SRGBColorSpace;
@@ -42,9 +50,8 @@ export function createWatchScene(
   camera.position.set(0, 0.2, 9.2);
   camera.lookAt(0, -0.15, -0.3);
 
-  const model = buildWatch(initial.color, initial.type);
-  const { watch } = model;
-  scene.add(watch, model.shadow);
+  let model = buildWatch({ caseKind: initial.caseKind, material: initial.material, color: initial.color });
+  scene.add(model.watch, model.shadow);
 
   const target = new THREE.Color(initial.color);
   const current = new THREE.Color(initial.color);
@@ -122,7 +129,9 @@ export function createWatchScene(
     }
     // השעון מסתובב גם עם הגלילה
     const scrollSpin = reduceMotion ? 0 : window.scrollY * 0.0022;
-    watch.rotation.y = reduceMotion ? -0.5 + spin + 0.9 : spin - (1 - ease) * 1.6 + scrollSpin;
+    const { watch } = model;
+    if (initial.still !== undefined) watch.rotation.y = initial.still;
+    else watch.rotation.y = reduceMotion ? -0.5 + spin + 0.9 : spin - (1 - ease) * 1.6 + scrollSpin;
     watch.rotation.x = 0.06;
     watch.position.y = reduceMotion ? 0 : Math.sin(elapsed * 1.1) * 0.05;
     const scale = 0.86 + 0.14 * ease;
@@ -154,8 +163,11 @@ export function createWatchScene(
       target.set(hex);
       start();
     },
-    setType(type) {
-      model.setType(type);
+    setSpec(caseKind, material) {
+      scene.remove(model.watch, model.shadow);
+      model.dispose();
+      model = buildWatch({ caseKind, material, color: `#${current.getHexString()}` });
+      scene.add(model.watch, model.shadow);
       start();
     },
     dispose() {

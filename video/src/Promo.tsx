@@ -6,7 +6,7 @@ import { useEffect, useMemo, type CSSProperties, type ReactNode } from "react";
 import { AbsoluteFill, Sequence, spring, staticFile, useCurrentFrame } from "remotion";
 import * as THREE from "three";
 import { RoomEnvironment } from "three/examples/jsm/environments/RoomEnvironment.js";
-import { colors } from "../../lib/config";
+import { colors } from "../../lib/catalog";
 import { buildWatch } from "../../lib/watchModel";
 
 export const FPS = 30;
@@ -106,8 +106,11 @@ function Environment() {
 
 function WatchRig() {
   const frame = useCurrentFrame();
-  const model = useMemo(() => buildWatch(hex("black"), "silicone"), []);
+  // שני מודלים, סיליקון ומגנטית, ומציגים את המתאים לרגע
+  const silicone = useMemo(() => buildWatch({ caseKind: "apple", material: "silicone", color: hex("black") }), []);
+  const magnetic = useMemo(() => buildWatch({ caseKind: "apple", material: "magnetic", color: hex("black") }), []);
   const t = frame / FPS;
+  const model = t >= T.typeSwitch ? magnetic : silicone;
 
   // נחיתה מלמעלה עם קפיצה קטנה
   const drop = sp(frame, T.drop, { damping: 11, stiffness: 120 });
@@ -116,7 +119,6 @@ function WatchRig() {
   const rotY = -0.7 + t * 0.55 + extra;
 
   model.paint(strapColor(frame));
-  model.setType(t >= T.typeSwitch ? "magnetic" : "silicone");
 
   // בסיום השעון יורד קצת, כדי לפנות מקום ל"בקרוב"
   const settle = sp(frame, T.end, { damping: 200, stiffness: 120 }) * 0.32;

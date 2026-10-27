@@ -1,4 +1,4 @@
-import type { BandType } from "@/lib/config";
+type BandType = "silicone" | "magnetic";
 
 // הדמיה גרפית בלבד, עד שיהיו תמונות אמיתיות מהדגימות
 export function BandPreview({

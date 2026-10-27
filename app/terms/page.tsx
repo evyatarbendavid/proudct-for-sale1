@@ -1,7 +1,9 @@
 import type { Metadata } from "next";
 import { canonical } from "@/lib/seo";
 import Link from "next/link";
-import { bundles, business, delivery, site, warrantyText } from "@/lib/config";
+import { priceOf, products } from "@/lib/catalog";
+import { business, delivery, site, warrantyText } from "@/lib/config";
+import { pairPrice } from "@/lib/pricing";
 import { LegalPage } from "../components/LegalPage";
 
 export const metadata: Metadata = {
@@ -22,16 +24,17 @@ export default function TermsPage() {
 
       <h2>המוצרים</h2>
       <p>
-        רצועות לשעון חכם מסיליקון ורצועות מגנטיות, בצבעים ובמידות שמופיעים בדף ההזמנה. הרצועות
-        תואמות לשעוני Apple Watch במידות המצוינות. הן אינן מוצר מקורי של Apple, והעסק אינו קשור
-        ל-Apple. התמונות בדף הן הדמיה, וייתכן הבדל קל בגוון בין המסך למוצר.
+        רצועות לשעונים חכמים ולצמידי כושר, בחומרים, בצבעים ובמידות שמופיעים בדף של כל מוצר. הרצועות
+        תואמות לדגמים ולמידות שמצוינים בדף. הן אינן מוצר מקורי של יצרן השעון, והעסק אינו קשור ל-Apple,
+        Samsung, Garmin, Huawei, Amazfit, Xiaomi או Fitbit. התמונות בדפים הן הדמיה, וייתכן הבדל בגוון
+        ובפרטים בין התמונה למוצר.
       </p>
 
       <h2>מחירים ותשלום</h2>
       <ul>
-        {bundles.map((b) => (
-          <li key={b.qty}>
-            {b.label}: ₪{b.price}
+        {products.map((p) => (
+          <li key={p.slug}>
+            {p.name}: ₪{priceOf(p)} לרצועה, ₪{pairPrice(priceOf(p))} לזוג
           </li>
         ))}
       </ul>

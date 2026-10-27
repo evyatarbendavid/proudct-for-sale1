@@ -1,4 +1,5 @@
 import Link from "next/link";
+import { familyOrder, families } from "@/lib/catalog";
 import { business, isLive, site } from "@/lib/config";
 
 export function DraftBanner() {
@@ -12,17 +13,33 @@ export function DraftBanner() {
 
 export function SiteHeader() {
   return (
-    <header>
-      <div className="mx-auto flex max-w-6xl items-center justify-between px-4 py-4">
+    <header className="border-b border-line bg-paper">
+      <div className="mx-auto flex max-w-6xl flex-wrap items-center gap-x-6 gap-y-2 px-3 py-3 md:px-4">
         <Link href="/" className="font-display text-3xl leading-none font-bold">
           {site.brandName}
         </Link>
-        <Link
-          href="/#order"
-          className="inline-flex min-h-11 items-center rounded-full border-2 border-ink px-5 text-sm font-semibold transition-colors hover:bg-ink hover:text-paper"
-        >
-          {isLive ? "להזמנה" : "לבחירת רצועה"}
-        </Link>
+        <form action="/" role="search" className="order-last flex w-full md:order-none md:w-auto md:flex-1">
+          <label htmlFor="site-search" className="sr-only">
+            חיפוש רצועה
+          </label>
+          <input
+            id="site-search"
+            name="q"
+            type="search"
+            placeholder="חיפוש לפי שעון או חומר, למשל Galaxy או עור"
+            className="min-h-11 w-full min-w-0 rounded-s-full border-2 border-e-0 border-ink bg-paper px-4 text-sm outline-none"
+          />
+          <button type="submit" className="min-h-11 rounded-e-full bg-ink px-5 text-sm font-semibold text-paper">
+            חיפוש
+          </button>
+        </form>
+        <nav aria-label="קטגוריות" className="hidden gap-4 text-sm lg:flex">
+          {familyOrder.map((f) => (
+            <Link key={f} href={`/?family=${f}#catalog`} className="py-2 hover:underline">
+              {families[f].short}
+            </Link>
+          ))}
+        </nav>
       </div>
     </header>
   );
@@ -64,8 +81,8 @@ export function SiteFooter() {
         )}
 
         <p className="mt-4 text-xs text-paper/60">
-          Apple Watch הוא סימן מסחר של Apple Inc. העסק אינו קשור ל-Apple, והרצועות אינן
-          מוצר מקורי של Apple.
+          Apple Watch, Samsung Galaxy Watch, Garmin, Huawei, Amazfit, Xiaomi ו-Fitbit הם סימני מסחר של בעליהם.
+          העסק אינו קשור אליהם, והרצועות הן מוצרים תואמים ולא מקוריים. השמות מופיעים רק כדי לתאר תאימות.
         </p>
       </div>
     </footer>
