@@ -5,9 +5,9 @@ import { useThree } from "@react-three/fiber";
 import { useEffect, useMemo, type CSSProperties, type ReactNode } from "react";
 import { AbsoluteFill, Sequence, spring, staticFile, useCurrentFrame } from "remotion";
 import * as THREE from "three";
-import { RoomEnvironment } from "three/examples/jsm/environments/RoomEnvironment.js";
-import { colors } from "../../lib/catalog";
-import { buildWatch } from "../../lib/watchModel";
+import { colors, priceOf, productBySlug } from "../../lib/catalog";
+import { pairPrice } from "../../lib/pricing";
+import { buildWatch, caseColorFor, studioEnvironment } from "../../lib/watchModel";
 
 export const FPS = 30;
 export const W = 1080;
@@ -31,6 +31,10 @@ const C = {
 };
 
 const hex = (id: string) => colors.find((c) => c.id === id)?.hex ?? "#1f1f1f";
+
+// המחירים מהקטלוג, של הרצועה שמופיעה בסרטון (סיליקון ספורט ל-Apple Watch)
+const PRICE = priceOf(productBySlug("apple-silicone-sport")!);
+const PAIR = pairPrice(PRICE);
 const f = (sec: number) => Math.round(sec * FPS);
 
 // ציר הזמן בשניות (לפי רשימת הסצנות שאושרה)
@@ -78,24 +82,27 @@ function shake(frame: number, hits: number[], amp = 14) {
   return { x, y };
 }
 
-function strapColor(frame: number) {
+// צבע הרצועה לכל רגע, וצבע הגוף שמתאים לה (כמו באתר), באותו מעבר
+function watchColors(frame: number) {
   const t = frame / FPS;
   let i = 0;
   while (i + 1 < colorTimeline.length && colorTimeline[i + 1][0] <= t) i++;
   const [at, to] = colorTimeline[i];
   const from = i > 0 ? colorTimeline[i - 1][1] : to;
   const k = Math.min(1, sp(frame, at, { damping: 200, stiffness: 300 }));
-  return new THREE.Color(from).lerp(new THREE.Color(to), k);
+  const mix = (a: string, b: string) => new THREE.Color(a).lerp(new THREE.Color(b), k);
+  return { strap: mix(from, to), case: mix(caseColorFor("apple", from), caseColorFor("apple", to)) };
 }
 
 function Environment() {
   const { gl, scene } = useThree();
   useEffect(() => {
     const pmrem = new THREE.PMREMGenerator(gl);
-    const env = pmrem.fromScene(new RoomEnvironment(), 0.04).texture;
+    // אותו סטודיו ואותו tone mapping כמו באתר
+    const env = pmrem.fromScene(studioEnvironment(), 0.02).texture;
     scene.environment = env;
-    gl.toneMapping = THREE.ACESFilmicToneMapping;
-    gl.toneMappingExposure = 1.05;
+    gl.toneMapping = THREE.NeutralToneMapping;
+    gl.toneMappingExposure = 1;
     return () => {
       env.dispose();
       pmrem.dispose();
@@ -118,13 +125,14 @@ function WatchRig() {
   const extra = sp(frame, T.spin, { damping: 18, stiffness: 60 }) * Math.PI * 2;
   const rotY = -0.7 + t * 0.55 + extra;
 
-  model.paint(strapColor(frame));
+  const { strap, case: caseColor } = watchColors(frame);
+  model.paint(strap, caseColor);
 
   // בסיום השעון יורד קצת, כדי לפנות מקום ל"בקרוב"
   const settle = sp(frame, T.end, { damping: 200, stiffness: 120 }) * 0.32;
 
   return (
-    <group position={[0, -0.86 - settle + (1 - drop) * 5, 0]} scale={0.5}>
+    <group position={[0, -0.98 - settle + (1 - drop) * 5, 0]} scale={1}>
       <primitive object={model.watch} rotation={[0.06, rotY, 0]} />
       <primitive object={model.shadow} />
     </group>
@@ -270,7 +278,7 @@ export function Promo() {
         {t >= T.drop && (
           <ThreeCanvas width={W} height={H} camera={{ fov: 28, position: [0, 0.2, 9.2] }} style={{ position: "absolute", inset: 0 }}>
             <Environment />
-            <directionalLight position={[-3, 4, 5]} intensity={1.4} />
+            <directionalLight position={[-3, 4, 5]} intensity={1.1} />
             <WatchRig />
           </ThreeCanvas>
         )}
@@ -328,7 +336,7 @@ export function Promo() {
         {t >= T.price1 && t < T.price2 && (
           <div style={{ ...row, top: 330, flexDirection: "column", gap: 10 }}>
             <Word style={slam(frame, T.price1)} color={C.paper} size={430}>
-              ₪45
+              ₪{PRICE}
             </Word>
             <span style={{ fontFamily: BODY, fontWeight: 600, fontSize: 100, color: C.paper, ...rise(frame, T.price1 + 0.15) }}>
               לרצועה
@@ -350,7 +358,7 @@ export function Promo() {
               }}
             >
               <Word style={{}} size={430}>
-                ₪69
+                ₪{PAIR}
               </Word>
               <span style={{ fontFamily: BODY, fontWeight: 600, fontSize: 100, color: C.ink }}>לזוג</span>
             </div>

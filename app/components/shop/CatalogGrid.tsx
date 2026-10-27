@@ -5,8 +5,11 @@ import { useSearchParams } from "next/navigation";
 import { familyOrder, families, products, type Family } from "@/lib/catalog";
 import { ProductCard } from "./ProductCard";
 
+/** תמונה אמיתית לכל מוצר שיש לו (נקראת בשרת, lib/photos.ts) */
+export type Covers = Record<string, string | undefined>;
+
 // סינון לפי משפחה (?family=) וחיפוש (?q=), שניהם מהכתובת, כדי שקישור לקטגוריה יעבוד מכל מקום
-export function CatalogGrid() {
+export function CatalogGrid({ covers }: { covers: Covers }) {
   const params = useSearchParams();
   const family = params.get("family") as Family | null;
   const q = (params.get("q") ?? "").trim();
@@ -42,7 +45,7 @@ export function CatalogGrid() {
       {list.length ? (
         <div className="grid grid-cols-2 gap-3 md:grid-cols-3 lg:grid-cols-4">
           {list.map((p) => (
-            <ProductCard key={p.slug} product={p} />
+            <ProductCard key={p.slug} product={p} cover={covers[p.slug]} />
           ))}
         </div>
       ) : (
@@ -55,11 +58,11 @@ export function CatalogGrid() {
 }
 
 // גרסה בלי סינון, למצב לפני שהדפדפן קורא את הכתובת
-export function CatalogGridStatic() {
+export function CatalogGridStatic({ covers }: { covers: Covers }) {
   return (
     <div className="grid grid-cols-2 gap-3 md:grid-cols-3 lg:grid-cols-4">
       {products.map((p) => (
-        <ProductCard key={p.slug} product={p} />
+        <ProductCard key={p.slug} product={p} cover={covers[p.slug]} />
       ))}
     </div>
   );

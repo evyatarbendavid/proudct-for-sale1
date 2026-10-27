@@ -39,11 +39,28 @@ npm run lint
 
 ## תמונות
 
-עד שיגיעו תמונות אמיתיות, הגלריה מציגה את השעון בתלת-ממד (`lib/watchModel.ts`), ותמונות שצולמו ממנו, עם הכיתוב "הדמיה". כל מוצר מצולם בכל צבע משלוש זוויות, לתוך `public/renders`. כשמוסיפים מוצר או צבע, מצלמים מחדש:
+**תמונות אמיתיות** (מהדגימות, או של המוכר באישור שלו) מוסיפים עם פקודה אחת:
+
+```bash
+node scripts/add-photos.mjs apple-silicone-sport navy ~/Downloads/IMG_1201.jpg ~/Downloads/IMG_1202.jpg
+node scripts/add-photos.mjs apple-silicone-sport all ~/Downloads/box.jpg   # תמונה לכל הצבעים
+npm run build
+```
+
+- **מה הסקריפט עושה:** מסובב לפי המצלמה, מקטין ל-1600 פיקסלים, שומר כ-webp ומוחק את המידע שבקובץ, כולל מיקום GPS מהטלפון.
+- **איפה הקבצים:** הקבצים נשמרים ב-`public/photos/<מוצר>/<צבע>-<מספר>.webp`.
+- **איפה הן מופיעות:** בגלריה לפני התלת-ממד וההדמיות, בלי הכיתוב "הדמיה". גם בכרטיס בקטלוג ובתמונת השיתוף.
+- **קבצי HEIC:** מאייפון לא נתמכים. מייצאים כ-JPG.
+
+**הדמיות:** עד שיש תמונות אמיתיות, הגלריה מציגה את השעון בתלת-ממד (`lib/watchModel.ts`) ותמונות שצולמו ממנו, עם הכיתוב "הדמיה".
+- כל מוצר מצולם בכל צבע משלוש זוויות, ב-1280 פיקסלים, לתוך `public/renders`.
+- בנוסף נוצרת גרסה קטנה (`-thumb`) לכרטיסים ולבחירת הצבע.
+- הגוף של Apple Watch בגימור שמתאים לרצועה (Midnight, Starlight או כסף). ההתאמה מוגדרת ב-`colors` שב-`lib/catalog.ts`.
+- כשמוסיפים מוצר או צבע, מצלמים מחדש:
 
 ```bash
 npm run build && npx next start -p 3200
-node scripts/render-products.mjs http://localhost:3200   # בטרמינל אחר
+node scripts/render-products.mjs http://localhost:3200 --concurrency 2   # בטרמינל אחר
 ```
 
 הדף `/render` משמש רק לצילום הזה, ולא מאונדקס.

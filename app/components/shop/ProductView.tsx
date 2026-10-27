@@ -1,19 +1,20 @@
 "use client";
 
 import type { Product } from "@/lib/catalog";
+import type { Photo } from "@/lib/photos";
 import { isLive } from "@/lib/config";
 import { BuyBox } from "./BuyBox";
 import { Gallery } from "./Gallery";
 import { useProductOrder, whatsappHref } from "./order";
 
-export function ProductView({ product }: { product: Product }) {
+export function ProductView({ product, photos }: { product: Product; photos: Photo[] }) {
   const order = useProductOrder(product);
   const href = whatsappHref(order);
 
   return (
     <>
       <div className="grid gap-6 rounded-lg border border-line bg-paper p-3 md:grid-cols-[minmax(0,1.1fr)_minmax(0,1fr)] md:gap-8 md:p-6">
-        <Gallery order={order} />
+        <Gallery order={order} photos={photos} />
         <BuyBox order={order} />
       </div>
 

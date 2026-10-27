@@ -5,19 +5,31 @@ import { useRef, useState } from "react";
 import { caseKindOf, colorById } from "@/lib/catalog";
 import { Watch3D } from "../Watch3D";
 import { ANGLES, renderSrc, type Angle } from "./images";
+import type { Photo } from "@/lib/photos";
 import type { ProductOrder } from "./order";
 
-type Item = { kind: "3d" } | { kind: "image"; angle: Angle };
-const ITEMS: Item[] = [{ kind: "3d" }, ...ANGLES.map((angle) => ({ kind: "image" as const, angle }))];
+type Item = { kind: "photo"; src: string; n: number } | { kind: "3d" } | { kind: "image"; angle: Angle };
 const ANGLE_NAMES: Record<Angle, string> = { front: "מלפנים", side: "מהצד", back: "מאחור" };
 
+// מפתח יציב: כשמספר התמונות משתנה עם הצבע, התלת-ממד לא נבנה מחדש
+const keyOf = (item: Item) => (item.kind === "photo" ? item.src : item.kind === "3d" ? "3d" : item.angle);
+
 function label(item: Item) {
+  if (item.kind === "photo") return `תמונה ${item.n}`;
   return item.kind === "3d" ? "תלת-ממד, אפשר לסובב" : `הדמיה ${ANGLE_NAMES[item.angle]}`;
 }
 
-export function Gallery({ order }: { order: ProductOrder }) {
+// קודם תמונות אמיתיות (של הצבע שנבחר, ואז הכלליות), אחר כך התלת-ממד וההדמיות
+export function Gallery({ order, photos }: { order: ProductOrder; photos: Photo[] }) {
   const { product, color } = order;
-  const [active, setActive] = useState(0);
+  const ITEMS: Item[] = [
+    ...[...photos.filter((p) => p.color === color), ...photos.filter((p) => p.color === "all")].map((p, i) => ({ kind: "photo" as const, src: p.src, n: i + 1 })),
+    { kind: "3d" },
+    ...ANGLES.map((angle) => ({ kind: "image" as const, angle })),
+  ];
+  const [activeRaw, setActive] = useState(0);
+  // מספר התמונות משתנה לפי הצבע
+  const active = Math.min(activeRaw, ITEMS.length - 1);
   const track = useRef<HTMLDivElement>(null);
   const hex = colorById(color).hex;
 
@@ -46,9 +58,19 @@ export function Gallery({ order }: { order: ProductOrder }) {
   }
 
   const view = (item: Item, i: number) => (
-    <div key={i} className="relative aspect-square w-full shrink-0 snap-center bg-stage md:rounded-lg">
+    <div key={keyOf(item)} className="relative aspect-square w-full shrink-0 snap-center bg-stage md:rounded-lg">
       {item.kind === "3d" ? (
         <Watch3D color={hex} caseKind={caseKindOf(product)} material={product.material} className="absolute inset-0" />
+      ) : item.kind === "photo" ? (
+        <Image
+          src={item.src}
+          alt={`${product.name}, ${colorById(color).name}, ${label(item)}`}
+          fill
+          unoptimized
+          priority={i === 0}
+          sizes="(min-width: 768px) 50vw, 100vw"
+          className="object-cover"
+        />
       ) : (
         <Image
           src={renderSrc(product.slug, color, item.angle)}
@@ -60,9 +82,11 @@ export function Gallery({ order }: { order: ProductOrder }) {
           className="object-contain p-4"
         />
       )}
-      <span className="absolute top-3 right-3 rounded bg-paper/90 px-2 py-0.5 text-xs text-graphite">
-        {item.kind === "3d" ? "תלת-ממד, גררו לסיבוב" : "הדמיה"}
-      </span>
+      {item.kind !== "photo" && (
+        <span className="absolute top-3 right-3 rounded bg-paper/90 px-2 py-0.5 text-xs text-graphite">
+          {item.kind === "3d" ? "תלת-ממד, גררו לסיבוב" : "הדמיה"}
+        </span>
+      )}
     </div>
   );
 
@@ -72,7 +96,7 @@ export function Gallery({ order }: { order: ProductOrder }) {
       <div className="hidden w-16 shrink-0 flex-col gap-2 md:flex" role="tablist" aria-label="תמונות המוצר">
         {ITEMS.map((item, i) => (
           <button
-            key={i}
+            key={keyOf(item)}
             type="button"
             role="tab"
             aria-selected={active === i}
@@ -84,6 +108,8 @@ export function Gallery({ order }: { order: ProductOrder }) {
           >
             {item.kind === "3d" ? (
               <span className="grid h-full place-items-center text-xs font-semibold">3D</span>
+            ) : item.kind === "photo" ? (
+              <Image src={item.src} alt="" fill unoptimized sizes="64px" className="object-cover" />
             ) : (
               <Image src={renderSrc(product.slug, color, item.angle)} alt="" fill unoptimized sizes="64px" className="object-contain p-1" />
             )}
@@ -107,7 +133,7 @@ export function Gallery({ order }: { order: ProductOrder }) {
         </div>
         <div className="mt-1 flex justify-center md:hidden">
           {ITEMS.map((item, i) => (
-            <button key={i} type="button" onClick={() => show(i)} aria-label={label(item)} className="grid h-8 w-7 place-items-center">
+            <button key={keyOf(item)} type="button" onClick={() => show(i)} aria-label={label(item)} className="grid h-8 w-7 place-items-center">
               <span className={`h-1.5 rounded-full transition-all ${active === i ? "w-5 bg-ink" : "w-1.5 bg-graphite/40"}`} />
             </button>
           ))}

@@ -3,6 +3,7 @@ import Link from "next/link";
 import { notFound } from "next/navigation";
 import { families, priceOf, productBySlug, products } from "@/lib/catalog";
 import { isLive, site } from "@/lib/config";
+import { coverFor, photosFor } from "@/lib/photos";
 import { canonical } from "@/lib/seo";
 import { InfoSections } from "../../components/shop/InfoSections";
 import { ProductCard } from "../../components/shop/ProductCard";
@@ -23,7 +24,7 @@ export async function generateMetadata({ params }: PageProps<"/p/[slug]">): Prom
     title: p.name,
     description,
     ...canonical(`/p/${p.slug}`),
-    openGraph: { title: p.name, description, images: [{ url: renderSrc(p.slug, p.colors[0]), width: 640, height: 640 }] },
+    openGraph: { title: p.name, description, images: [{ url: coverFor(p) ?? renderSrc(p.slug, p.colors[0]) }] },
   };
 }
 
@@ -32,6 +33,7 @@ export default async function ProductPage({ params }: PageProps<"/p/[slug]">) {
   const product = productBySlug(slug);
   if (!product) notFound();
   const family = families[product.family];
+  const photos = photosFor(product);
 
   // מוצרים דומים: קודם מאותה משפחה, ואז האחרים
   const related = [
@@ -46,7 +48,7 @@ export default async function ProductPage({ params }: PageProps<"/p/[slug]">) {
         "@type": "Product",
         name: product.name,
         description: product.description,
-        image: site.url ? `${site.url}${renderSrc(product.slug, product.colors[0])}` : undefined,
+        image: site.url ? `${site.url}${photos[0]?.src ?? renderSrc(product.slug, product.colors[0])}` : undefined,
         brand: { "@type": "Brand", name: site.brandName },
         offers: {
           "@type": "Offer",
@@ -80,14 +82,14 @@ export default async function ProductPage({ params }: PageProps<"/p/[slug]">) {
           <Link href={`/?family=${product.family}#catalog`} className="hover:underline">{family.name}</Link>
         </nav>
 
-        <ProductView product={product} />
+        <ProductView product={product} photos={photos} />
         <InfoSections product={product} />
 
         <section aria-labelledby="related-title" className="mt-8">
           <h2 id="related-title" className="mb-3 text-lg font-bold">אולי יתאים לך גם</h2>
           <div className="grid grid-cols-2 gap-3 md:grid-cols-4">
             {related.map((p) => (
-              <ProductCard key={p.slug} product={p} />
+              <ProductCard key={p.slug} product={p} cover={coverFor(p)} />
             ))}
           </div>
         </section>

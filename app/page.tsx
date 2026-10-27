@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import { Suspense } from "react";
 import { colorById, products } from "@/lib/catalog";
 import { delivery } from "@/lib/config";
+import { coverFor } from "@/lib/photos";
 import { priceFor } from "@/lib/pricing";
 import { canonical } from "@/lib/seo";
 import { CatalogGrid, CatalogGridStatic } from "./components/shop/CatalogGrid";
@@ -13,6 +14,7 @@ export const metadata: Metadata = {
 };
 
 const minPrice = Math.min(...products.map((p) => priceFor(p.cost)));
+const covers = Object.fromEntries(products.map((p) => [p.slug, coverFor(p)]));
 
 const promises = [
   { title: "משלוח חינם", text: `עד הבית, ${delivery.homeText}` },
@@ -52,8 +54,8 @@ export default function Home() {
 
         <section id="catalog" aria-labelledby="catalog-title" className="mt-6 scroll-mt-4">
           <h2 id="catalog-title" className="mb-3 text-xl font-bold">כל הרצועות</h2>
-          <Suspense fallback={<CatalogGridStatic />}>
-            <CatalogGrid />
+          <Suspense fallback={<CatalogGridStatic covers={covers} />}>
+            <CatalogGrid covers={covers} />
           </Suspense>
         </section>
       </main>

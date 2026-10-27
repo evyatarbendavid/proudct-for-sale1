@@ -6,7 +6,7 @@ import { useRef } from "react";
 import { colorById, families } from "@/lib/catalog";
 import { delivery, isLive, paymentLink, site, warrantyText } from "@/lib/config";
 import { pairPrice } from "@/lib/pricing";
-import { renderSrc } from "./images";
+import { thumbSrc } from "./images";
 import { MAX_QTY, whatsappHref, type ProductOrder } from "./order";
 
 const chip =
@@ -52,7 +52,7 @@ export function BuyBox({ order }: { order: ProductOrder }) {
           {product.colors.map((id) => (
             <label key={id} className={`${chip} relative size-14 cursor-pointer overflow-hidden bg-stage ${color === id ? "border-ink" : "border-line hover:border-graphite"}`} title={colorById(id).name}>
               <input type="radio" name="color" checked={color === id} onChange={() => order.setColor(id)} className="sr-only" aria-label={colorById(id).name} />
-              <Image src={renderSrc(product.slug, id)} alt="" fill unoptimized sizes="56px" className="object-contain p-0.5" />
+              <Image src={thumbSrc(product.slug, id)} alt="" fill unoptimized sizes="56px" className="object-contain p-0.5" />
             </label>
           ))}
         </div>

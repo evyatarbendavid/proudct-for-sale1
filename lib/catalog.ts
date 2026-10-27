@@ -7,21 +7,22 @@ export type Family = "apple" | "quick-release" | "garmin" | "tracker";
 export type Material = "silicone" | "magnetic" | "nylon" | "milanese" | "leather" | "link";
 export type CaseKind = "apple" | "round" | "tracker";
 
+// case: גימור הגוף של Apple Watch שמתאים לרצועה בצבע הזה, כמו בתמונות של חנויות
 export const colors = [
-  { id: "black", name: "שחור", hex: "#1f1f1f" },
-  { id: "white", name: "לבן", hex: "#f4f2ee" },
-  { id: "gray", name: "אפור", hex: "#8a8d91" },
-  { id: "navy", name: "כחול כהה", hex: "#1e2b4a" },
-  { id: "olive", name: "ירוק זית", hex: "#5b6347" },
-  { id: "sand", name: "חול", hex: "#d8c3a5" },
-  { id: "pink", name: "ורוד", hex: "#e8a5b5" },
-  { id: "wine", name: "בורדו", hex: "#6b1f2e" },
-  { id: "orange", name: "כתום", hex: "#e8642c" },
-  { id: "brown", name: "חום", hex: "#6b4428" },
-  { id: "tan", name: "קאמל", hex: "#b07a4f" },
-  { id: "silver", name: "כסוף", hex: "#c9ccd1" },
-  { id: "graphite", name: "גרפיט", hex: "#3b3d41" },
-  { id: "rose", name: "זהב ורוד", hex: "#d8a99a" },
+  { id: "black", name: "שחור", hex: "#1f1f1f", case: "midnight" },
+  { id: "white", name: "לבן", hex: "#f4f2ee", case: "starlight" },
+  { id: "gray", name: "אפור", hex: "#8a8d91", case: "silver" },
+  { id: "navy", name: "כחול כהה", hex: "#1e2b4a", case: "midnight" },
+  { id: "olive", name: "ירוק זית", hex: "#5b6347", case: "midnight" },
+  { id: "sand", name: "חול", hex: "#d8c3a5", case: "starlight" },
+  { id: "pink", name: "ורוד", hex: "#e8a5b5", case: "starlight" },
+  { id: "wine", name: "בורדו", hex: "#6b1f2e", case: "midnight" },
+  { id: "orange", name: "כתום", hex: "#e8642c", case: "silver" },
+  { id: "brown", name: "חום", hex: "#6b4428", case: "silver" },
+  { id: "tan", name: "קאמל", hex: "#b07a4f", case: "starlight" },
+  { id: "silver", name: "כסוף", hex: "#c9ccd1", case: "silver" },
+  { id: "graphite", name: "גרפיט", hex: "#3b3d41", case: "midnight" },
+  { id: "rose", name: "זהב ורוד", hex: "#d8a99a", case: "starlight" },
 ] as const;
 
 export type ColorId = (typeof colors)[number]["id"];
