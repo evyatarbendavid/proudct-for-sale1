@@ -65,6 +65,28 @@ node scripts/render-products.mjs http://localhost:3200 --concurrency 2   # בט�
 
 הדף `/render` משמש רק לצילום הזה, ולא מאונדקס.
 
+## עבודה עם התוסף של כרום
+
+בשביל משימות בדפדפן שלך (למשל בדיקת המוכרים והמחירים באלי אקספרס, שחוסם גישה משרת), Claude צריך לרוץ על המחשב שלך עם התוסף [Claude in Chrome](https://chromewebstore.google.com/detail/claude/fcoeoabgfenejglbffodgkkbkcdhcgfn). סשן של Claude Code בענן (באפליקציה או באתר) לא מתחבר לכרום שלך.
+
+הגדרה חד-פעמית, כדי שהתוסף יהיה זמין בכל סשן:
+
+1. **התקנה:** מתקינים את [Claude Code](https://code.claude.com/docs/en/quickstart) על המחשב (לא ב-WSL).
+   - מתחברים עם `/login` לאותו חשבון ולאותו ארגון שאליהם מחובר התוסף בכרום.
+   - חיבור עם מפתח API לא עובד עם כרום.
+2. **שכפול הריפו:**
+   ```bash
+   git clone https://github.com/evyatarbendavid/proudct-for-sale1
+   cd proudct-for-sale1 && git checkout claude/relaxed-cerf-51i3vv
+   ```
+3. **הפעלה:** מריצים `claude --chrome`, ואז `/chrome` ← **Enabled by default**.
+   - מעכשיו כל סשן מתחבר לכרום בלי הדגל.
+   - בדיקה: `/chrome` מראה "Status: Enabled" ו-"Extension: Installed".
+   - אם התוסף לא מזוהה: מפעילים מחדש את כרום, ואז `/chrome` ← Reconnect extension.
+4. **אופציונלי:** כדי לעבוד על אותם סשנים גם מהטלפון, מריצים בתיקייה `claude remote-control`. הסשנים מופיעים באפליקציית Claude, אבל רצים על המחשב, ולכן יש להם את כרום.
+
+בדיקת המוכרים באלי אקספרס: בסשן המקומי כותבים "קרא את research/aliexpress-check.md ובצע". ההוראה שם מגדירה מה מותר בדפדפן (בלי קנייה ובלי הודעות למוכרים), מה לרשום לכל מוצר, ואיך לעדכן את הקטלוג.
+
 ## דפים
 
 - `/`: קטלוג, עם סינון לפי סוג שעון וחיפוש (`?family=`, `?q=`)
