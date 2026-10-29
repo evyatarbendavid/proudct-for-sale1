@@ -60,7 +60,13 @@ export function Gallery({ order, photos }: { order: ProductOrder; photos: Photo[
   const view = (item: Item, i: number) => (
     <div key={keyOf(item)} className="relative aspect-square w-full shrink-0 snap-center bg-stage md:rounded-lg">
       {item.kind === "3d" ? (
-        <Watch3D color={hex} caseKind={caseKindOf(product)} material={product.material} className="absolute inset-0" />
+        <Watch3D
+          color={hex}
+          caseKind={caseKindOf(product)}
+          material={product.material}
+          poster={renderSrc(product.slug, color)}
+          className="absolute inset-0"
+        />
       ) : item.kind === "photo" ? (
         <Image
           src={item.src}

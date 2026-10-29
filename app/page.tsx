@@ -6,6 +6,7 @@ import { coverFor } from "@/lib/photos";
 import { priceFor } from "@/lib/pricing";
 import { canonical } from "@/lib/seo";
 import { CatalogGrid, CatalogGridStatic } from "./components/shop/CatalogGrid";
+import { renderSrc } from "./components/shop/images";
 import { DraftBanner, SiteFooter, SiteHeader } from "./components/SiteChrome";
 import { Watch3D } from "./components/Watch3D";
 
@@ -15,6 +16,9 @@ export const metadata: Metadata = {
 
 const minPrice = Math.min(...products.map((p) => priceFor(p.cost)));
 const covers = Object.fromEntries(products.map((p) => [p.slug, coverFor(p)]));
+
+// השעון בפתיחה: רצועת סיליקון ספורט בכחול כהה. ממנה גם התמונה שמוצגת עד שהתלת-ממד נטען
+const HERO = { slug: "apple-silicone-sport", color: "navy" } as const;
 
 const promises = [
   { title: "משלוח חינם", text: `עד הבית, ${delivery.homeText}` },
@@ -47,7 +51,13 @@ export default function Home() {
             </a>
           </div>
           <div className="relative mx-auto aspect-square w-full max-w-[360px] rounded-lg bg-stage">
-            <Watch3D color={colorById("navy").hex} caseKind="apple" material="silicone" className="absolute inset-0" />
+            <Watch3D
+              color={colorById(HERO.color).hex}
+              caseKind="apple"
+              material="silicone"
+              poster={renderSrc(HERO.slug, HERO.color)}
+              className="absolute inset-0"
+            />
             <span className="absolute top-3 right-3 rounded bg-paper/90 px-2 py-0.5 text-xs text-graphite">תלת-ממד, גררו לסיבוב</span>
           </div>
         </section>

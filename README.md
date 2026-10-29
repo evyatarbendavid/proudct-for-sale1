@@ -67,23 +67,27 @@ node scripts/render-products.mjs http://localhost:3200 --concurrency 2   # בט�
 
 ## עבודה עם התוסף של כרום
 
-בשביל משימות בדפדפן שלך (למשל בדיקת המוכרים והמחירים באלי אקספרס, שחוסם גישה משרת), Claude צריך לרוץ על המחשב שלך עם התוסף [Claude in Chrome](https://chromewebstore.google.com/detail/claude/fcoeoabgfenejglbffodgkkbkcdhcgfn). סשן של Claude Code בענן (באפליקציה או באתר) לא מתחבר לכרום שלך.
+בשביל משימות בדפדפן שלך (למשל בדיקת המוכרים והמחירים באלי אקספרס, שחוסם גישה משרת), Claude צריך לרוץ על המחשב שלך עם התוסף [Claude in Chrome](https://chromewebstore.google.com/detail/claude/fcoeoabgfenejglbffodgkkbkcdhcgfn). סשן מסוג **Cloud** רץ בשרת של Anthropic ולא מתחבר לכרום שלך, גם כשהוא פתוח באפליקציה למחשב.
 
-הגדרה חד-פעמית, כדי שהתוסף יהיה זמין בכל סשן:
+הגדרה חד-פעמית:
 
-1. **התקנה:** מתקינים את [Claude Code](https://code.claude.com/docs/en/quickstart) על המחשב (לא ב-WSL).
-   - מתחברים עם `/login` לאותו חשבון ולאותו ארגון שאליהם מחובר התוסף בכרום.
-   - חיבור עם מפתח API לא עובד עם כרום.
-2. **שכפול הריפו:**
+1. **מה צריך על המחשב:**
+   - [Git](https://git-scm.com) ו-[Node.js LTS](https://nodejs.org).
+   - כרום עם התוסף, מחובר לאותו חשבון ולאותו ארגון של Claude.
+2. **מורידים את הפרויקט** (בטרמינל, ב-Windows ב-PowerShell):
    ```bash
    git clone https://github.com/evyatarbendavid/proudct-for-sale1
-   cd proudct-for-sale1 && git checkout claude/relaxed-cerf-51i3vv
+   cd proudct-for-sale1 && git checkout claude/relaxed-cerf-51i3vv && npm install
    ```
-3. **הפעלה:** מריצים `claude --chrome`, ואז `/chrome` ← **Enabled by default**.
-   - מעכשיו כל סשן מתחבר לכרום בלי הדגל.
-   - בדיקה: `/chrome` מראה "Status: Enabled" ו-"Extension: Installed".
-   - אם התוסף לא מזוהה: מפעילים מחדש את כרום, ואז `/chrome` ← Reconnect extension.
-4. **אופציונלי:** כדי לעבוד על אותם סשנים גם מהטלפון, מריצים בתיקייה `claude remote-control`. הסשנים מופיעים באפליקציית Claude, אבל רצים על המחשב, ולכן יש להם את כרום.
+3. **פותחים סשן מקומי באפליקציה למחשב (מומלץ):**
+   - Claude ← **Code** ← סשן חדש.
+   - בבורר הסביבה (הכפתור הראשון מתחת לתיבת הכתיבה) בוחרים **Local** במקום Cloud.
+   - בכפתור התיקייה שלידו בוחרים את `proudct-for-sale1`.
+   - כשהסשן מבקש להשתמש בדפדפן, מאשרים.
+4. **או בטרמינל:**
+   - מריצים `claude --chrome`, ואז `/chrome` ← **Enabled by default**. מעכשיו כל סשן מתחבר לכרום.
+   - **בדיקה:** `/chrome` מראה "Status: Enabled".
+   - **אם התוסף לא מזוהה:** מפעילים מחדש את כרום ובוחרים Reconnect extension.
 
 בדיקת המוכרים באלי אקספרס: בסשן המקומי כותבים "קרא את research/aliexpress-check.md ובצע". ההוראה שם מגדירה מה מותר בדפדפן (בלי קנייה ובלי הודעות למוכרים), מה לרשום לכל מוצר, ואיך לעדכן את הקטלוג.
 

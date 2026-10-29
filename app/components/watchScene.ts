@@ -9,6 +9,11 @@ export type WatchScene = {
   dispose(): void;
 };
 
+// הזווית שבה התצוגה החיה מתחילה: זו של התמונה "front" (scripts/render-products.mjs), שמוצגת עד הפריים הראשון
+const START_ANGLE = -0.35;
+// כמה מהפריים המודל ממלא. זהה בתצוגה החיה ובצילום, כדי שהמעבר מהתמונה לתלת-ממד לא יורגש
+const FILL = 1.02;
+
 export function createWatchScene(
   host: HTMLElement,
   initial: {
@@ -80,13 +85,12 @@ export function createWatchScene(
     camera.aspect = w / h;
     const halfFov = THREE.MathUtils.degToRad(camera.fov / 2);
     const fit = Math.min(Math.tan(halfFov), Math.tan(halfFov) * camera.aspect);
-    // בצילום הגלריה המוצר ממלא יותר מהפריים, כמו בתמונות מוצר
-    const fill = still ? 1.02 : 0.94;
-    const dist = radius / (fit * fill);
+    const dist = radius / (fit * FILL);
     camera.position.set(0, dist * 0.1, dist);
     camera.lookAt(0, -radius * 0.04, 0);
     camera.updateProjectionMatrix();
-    if (still) start();
+    // מציירים מחדש בגודל החדש גם כשהלולאה נחה, אחרת הקנבס נשאר מתוח
+    start();
   }
   const ro = new ResizeObserver(resize);
   ro.observe(host);
@@ -95,7 +99,7 @@ export function createWatchScene(
   let dragging = false;
   let lastX = 0;
   let velocity = 0;
-  let spin = -0.9;
+  let spin = START_ANGLE;
   const onDown = (e: PointerEvent) => {
     dragging = true;
     start();
@@ -130,7 +134,6 @@ export function createWatchScene(
   io.observe(host);
 
   const timer = new THREE.Timer();
-  let introT = reduceMotion ? 1 : 0;
   let raf = 0;
   let readyFired = false;
   // בצילום מחכים לגופן של פני השעון לפני הפריים הראשון
@@ -143,9 +146,6 @@ export function createWatchScene(
     timer.update();
     const dt = Math.min(timer.getDelta(), 0.05);
 
-    if (introT < 1) introT = Math.min(1, introT + dt / 1.4);
-    const ease = 1 - Math.pow(1 - introT, 3);
-
     if (!dragging) {
       if (!reduceMotion) spin += 0.32 * dt;
       spin += velocity;
@@ -154,11 +154,10 @@ export function createWatchScene(
     // השעון מסתובב גם עם הגלילה
     const scrollSpin = reduceMotion ? 0 : window.scrollY * 0.0022;
     const { watch } = model;
-    if (still) watch.rotation.y = initial.still!;
-    else watch.rotation.y = reduceMotion ? -0.5 + spin + 0.9 : spin - (1 - ease) * 1.6 + scrollSpin;
+    // מתחילים בדיוק בזווית של התמונה וממשיכים ממנה, בלי כניסה מונפשת
+    watch.rotation.y = still ? initial.still! : spin + scrollSpin;
     // השעון עומד על הרצועה, ולכן לא מרחף: רק מסתובב
     watch.rotation.x = 0.06;
-    watch.scale.setScalar(0.86 + 0.14 * ease);
 
     const k = reduceMotion ? 1 : 0.1;
     model.paint(current.lerp(target, k), caseCurrent.lerp(caseTarget, k));
@@ -184,12 +183,13 @@ export function createWatchScene(
   document.addEventListener("visibilitychange", onVisibility);
 
   resize();
-  if (still) {
-    model.ready.then(() => {
-      canRender = true;
-      start();
-    });
-  } else start();
+  // אחרי שהגופן של פני השעון נטען הם מצוירים מחדש. מציירים פריים, גם כשהלולאה נחה.
+  // בצילום מחכים לזה לפני הפריים הראשון
+  model.ready.then(() => {
+    canRender = true;
+    start();
+  });
+  start();
 
   return {
     setColor(hex) {
@@ -208,7 +208,7 @@ export function createWatchScene(
       scene.add(model.watch, model.shadow);
       measure();
       resize();
-      start();
+      model.ready.then(start);
     },
     dispose() {
       disposed = true;

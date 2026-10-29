@@ -3,19 +3,21 @@
 import { useEffect, useRef, useState } from "react";
 import type { CaseKind, Material } from "@/lib/catalog";
 import type { WatchScene } from "./watchScene";
-import { BandPreview } from "./BandPreview";
 
-// שעון תלת-ממדי שמסתובב. עד שהוא נטען, או אם אין WebGL, מוצגת הדמיה שטוחה
+// שעון תלת-ממדי שמסתובב. עד שהוא נטען, או אם אין WebGL, מוצגת התמונה של אותו שעון (poster)
 export function Watch3D({
   color,
   caseKind,
   material,
+  poster,
   className = "",
   still,
 }: {
   color: string;
   caseKind: CaseKind;
   material: Material;
+  /** התמונה המצולמת של אותו מוצר וצבע מלפנים (renderSrc). התלת-ממד מתחיל באותה זווית ובאותו גודל */
+  poster?: string;
   className?: string;
   /** זווית קבועה בלי תנועה, לצילום תמונות */
   still?: number;
@@ -65,21 +67,21 @@ export function Watch3D({
       aria-label="שעון חכם עם הרצועה בצבע שנבחר. אפשר לגרור כדי לסובב."
       data-ready={ready}
     >
-      {/* בצילום תמונות אין הדמיה שטוחה ואין מעבר, כדי שלא תישאר שכבה חצי שקופה בתמונה */}
-      {still === undefined && (
-        <div
-          className={`absolute inset-0 grid place-items-center transition-opacity duration-500 ${
-            ready ? "opacity-0" : "opacity-100"
-          }`}
+      {/* עד הפריים הראשון: התמונה של אותו שעון, כך שמהרגע הראשון רואים שעון אמיתי. בצילום אין תמונה ואין מעבר */}
+      {still === undefined && poster && (
+        // eslint-disable-next-line @next/next/no-img-element -- תמונה מקומית שכבר מוקטנת, בלי צורך באופטימיזציה
+        <img
+          src={poster}
+          alt=""
           aria-hidden
-        >
-          <BandPreview hex={color} type={material === "magnetic" ? "magnetic" : "silicone"} className="h-3/4 w-auto" />
-        </div>
+          decoding="async"
+          className={`absolute inset-0 h-full w-full object-contain transition-opacity duration-300 ${ready ? "opacity-0" : "opacity-100"}`}
+        />
       )}
       {!failed && (
         <div
           ref={host}
-          className={`absolute inset-0 ${still === undefined ? "transition-opacity duration-700" : ""} ${ready ? "opacity-100" : "opacity-0"}`}
+          className={`absolute inset-0 ${still === undefined ? "transition-opacity duration-300" : ""} ${ready ? "opacity-100" : "opacity-0"}`}
         />
       )}
     </div>
