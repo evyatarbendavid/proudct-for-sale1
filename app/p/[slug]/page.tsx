@@ -8,6 +8,7 @@ import { canonical } from "@/lib/seo";
 import { InfoSections } from "../../components/shop/InfoSections";
 import { ProductCard } from "../../components/shop/ProductCard";
 import { ProductView } from "../../components/shop/ProductView";
+import { ScrollToTop } from "../../components/shop/ScrollToTop";
 import { DraftBanner, SiteFooter, SiteHeader } from "../../components/SiteChrome";
 import { renderSrc } from "../../components/shop/images";
 
@@ -72,6 +73,7 @@ export default async function ProductPage({ params }: PageProps<"/p/[slug]">) {
 
   return (
     <>
+      <ScrollToTop slug={product.slug} />
       <DraftBanner />
       <SiteHeader />
       <main className="mx-auto w-full max-w-6xl flex-1 px-3 pt-3 pb-24 md:px-4 md:pb-12">
